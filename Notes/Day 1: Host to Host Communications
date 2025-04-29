@@ -1,0 +1,28 @@
+OSI (Open Systems Interchange) Model
+7. Application 
+6. Presentation
+5. Session
+4. Transport - Encapsulation includes: TCP/UDP, Port number
+3. Network - Encapsulation includes: IP addresses, devices includes: Routers 
+2. Data Link - Encapsulation includes: MAC Address, devices include: Switches
+1. Physical - Devices include: Hubs
+
+Application Layer 7: Provides network services to the applications of the user. Does not provide services to any other OSI layer. Establishes the availability of intended communication partners, then synchronizes and establishes agreement on procedures for error recovery and control of data integrity. 
+Presentation Layer 6: Ensures that the information that is sent at the application layer of one system is readable by the application layer of another system. Can translate among multiple data formats using a common format. 
+Session Layer 5: Establishes, manages, and terminates sessions between two communicating hosts. Synchronizes dialog between the presentation layers of the two hosts and manages their data exchange. 
+Transport Layer 4: Whether TCP or UDP transport is used and the port number. Defines services to segment, transfer, and reassemble the data for individual communication between end devices. Breaks down large files into smaller segments that are less likely to incur transmission problems.
+Network Layer 3: Source and destination IP address. Provides connectivity and path selection between two host systems that may be located on geographically separated networking. Manages the connectivity of hosts by providing logical addressing.
+Data Link Layer 2: Source and destination layer 2 address - MAC address if Ethernet is the layer 2 technology. Defines how data is formatted for transmission and how access to physical media is controlled. Typically, it includes error detection and correction to ensure reliable delivery of data. 
+Physical Layer 1: Physical componenets of the network. Bit transmission between end devices. Defines specification needed for activating, maintaining, and deactivating the physical link between devices. Example: Voltage levels, physical data rates, maximum transmission distances, physical connectors, etc. 
+
+TCP/IP Stack
+Application - Includes top 3 OSI model layers - Represents data users, encodes and controls the dialog
+Transport - Includes session and Transport layers - Supports communication between end devices across a diverse network
+Internet - Includes Network layer - Provides logical addressing and determines the best path through the network
+Network Access/Link  - Includes Data Link and Physical layers - Controls the hardware devices and media that make up the network
+
+PDUs (Protocol Data Units) make up the entire communication from layer 7 to 1. To differentiate communication among layers, different names for different layers:
+Application: Data
+Transport:  Segment
+Internet: Packet
+Link: Frame
