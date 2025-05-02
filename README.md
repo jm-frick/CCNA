@@ -3,6 +3,7 @@ This is a repository of all the resources used to study for the CCNA exam. A com
 
 
 I passed the exam with the following scores: 
+
 Automation and Programmability: 90%
 
 Network Access: 95%
