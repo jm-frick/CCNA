@@ -10,9 +10,7 @@ Network Access: 95%
 IP Connectivity: 88%
 
 IP Services: 90%
-
 Security Fundamentals: 93%
-
 Network Fundamentals: 90%
 
 
