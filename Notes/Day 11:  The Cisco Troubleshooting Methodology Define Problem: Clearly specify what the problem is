@@ -1,0 +1,9 @@
+Gather Information: Find out information about the problem (ping host if the connection is down, ask if any changed recently, etc)
+Analyze Information: Ask relevant questions (show and debug commands, ask people) and analyze the output for clues on how to solve the problem
+Eliminate Potential Causes: Process of elimination to narrow down potential cause
+Propose Hypothesis: Take all information into account and determine a best guess solution
+Test Hypothesis: Implement the hypothesis and observe if the problem is resolved
+Solve Problem and Document Solution: Important for future issues
+
+Compare configurations for configuration issues. For connectivity problems, trace the path - start at the source and move toward the destination. Swap out components if hardware is likely the issue. 
+ping to check connectivity from source to host, traceroute if there are multiple hops between source and destination, and telnet to get onto the command line of a device or checking if a port is open on a device. 
