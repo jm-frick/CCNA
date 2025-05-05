@@ -1,0 +1,8 @@
+Ping uses ICMP (Internet Control Message Protocol) uses the TCP/IP stack and is used for two way connectivity checking.
+Extended ping is used from a router on the same subnet. The command ping (no IP address specified) will allow the extended ping options.
+Traceroute traces the path a packet is taking across a network. Takes advantage of the TTL header, each hop will send a TTL back to the source. CTRL+Shift+6 will end the command.
+
+Layer 1 tools: show ip interface brief, show interface
+Layer 2 tools: show arp, show mac-address-table
+Layer 4 tools: Telnet
+Other tools: nslookup, ping by FQDN
