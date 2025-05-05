@@ -1,0 +1,7 @@
+Hubs operate in half duplex - attached hosts cannot send and receive data simultaneously. Operates at layer 1. All hosts share the same collision domain - only one device can transmit at a time. Not MAC address aware, when a frame is received, it is flooded out to all ports apart from the one it was sent on. The method that is used for detecting and recovering from collisions is CSMA/CD (Carrier-Sense Multiple Access with Collision Detection).
+
+Switches can operate in half or full duplex - in practice, they always operate in full duplex. Operates at layer 2. All hosts have their own dedicated collision domain. Collision detection is not required. Are MAC address aware; after the first time a frame is sent to a MAC address, the switch will only send traffic for that MAC address to the learned port. When a frame is received on the broadcast domain, it is only flooded out for the first time to learn the MAC address of the receiver. Some switches are layer 3 aware and can route traffic between different subnets. 
+
+Whenever a switch receives a frame for the broadcast address or an unknown unicast address, it will be flooded out all ports apart from the one it was received on.
+
+Routers know the paths to get to the different IP subnets on a network, required to send traffic from one subnet to another. Operates at layer 3 - but also operates at layer 1 and 2, and has awareness up to layer 7. 
