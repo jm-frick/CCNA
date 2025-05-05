@@ -1,0 +1,5 @@
+Frames at layer 2, frames are encoded and decoded into bits at Layer 2. Error detection and correction for the Physical layer 1 can be provided here. Ethernet is the layer 2 medium used on LANs. The preamble is at the start of the Ethernet header, which helps the sender and the receiver synchronize.The Frame Check Sequence (FCS) is a cyclical redundancy check which is used to check for the integrity of the frame, to check that it has not been corrupted during transit.
+MAC addresses are 48 bit (6 byte) hexadecimal addresses. First 24 bits are the OUI (Organizationally Unique Identifier) which uniquely identifies the manufacturer of the Ethernet port. The second 24 bits are assigned by the manufacturer, and every MAC is unique. 
+
+802.11 MAC Frame Format:
+Frame  Control	Duration/ID		Address 1	 Address 2	Address 3	 Sequence Control	 Address 4	QoS Control 	HT Control	Frame Body	FCS
