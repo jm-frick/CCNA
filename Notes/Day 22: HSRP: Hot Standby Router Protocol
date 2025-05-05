@@ -1,0 +1,29 @@
+FHRP (First Hop Redundancy Protocols) use a Virtual IP (VIP) and MAC address to allow for automated gateway failover. The hosts use the VIP as their default gateway address. If a physical gateway fails, another gateway will take over. Offers redundancy to eliminate single points of failure. Only used for infrastructure (Core and Distribution layers), Access layers only have a single NIC, servers with multiple NICs are an exception. To manipulate the preferred path, specify the administrative distance. 
+
+FHRPs include:
+HSRP (Hot Standby Router Protocol): Cisco proprietary, deployed in active/standby pair.
+VRRP (Virtual Router Redundancy Protocol): Open standard. Deployed in active/standby pair, similar protocol to HSRP.
+Gateway Load Balancing Protocol (GLBP): Cisco proprietary. Supports active/active load balancing across multiple routers. 
+
+HSRP (Hot Standby Router Protocol) Active/Standby pair, both routers have a normal physical IP address and MAC address on their HSRP interface, unique addresses are used on both routers; both routers have the HSRP VIP and MAC address configured on the interface - same address used on both routers. One is elected the HSRP active, the other is standby. Active routers owns the VIP and MAC addresses and responds to ARP requests. All traffic for the VIP goes through the active router. The routers send hello messages over the HSRP interface; if the standby router stops receiving hello messages from the active router, it will transition to be the active router and take ownership of the VIP and MAC address and respond to ARP requests. 
+HSRP routers can have priority assigned, default is 100, highest priority wins; in a tie, highest IP address wins. If pre-emption is also enabled, when a higher priority router comes back online after a failure, it will transition back to active. If pre-emption is not enabled, the lower priority router will remain active even when the failed router comes back online - it can be more stable if a higher priority router is flapping. Load balancing can be done by setting up additional HSRP pairs, standby IP must be different on both and hosts must be configured 50%/50% to use the two different standby IPs. Can also be done by using different subnets to divide traffic for load balancing, using two pairs of HSRP routers. 
+Active router configuration:
+  R1(config)# interface g0/1	
+  R1(config-if)# ip address 10.10.10.2 255.255.255.0 - this is the physical interface address, different on both routers
+  R1(config-if)# no shutdown
+  R1(config-if)# standby 1 ip 10.10.10.1 - this is the VIP address, same on both routers. 1 is the group number, changes for every HSRP pair.
+
+  R1(config-if)# standby 1 priority 110 - to set priority, optional
+  R1(config-if)# standby 1 preempt - to set pre-emption to on, optional
+  R1(config-if)# standby version 2 - to set v2 as default, MUST BE DONE ON BOTH ROUTERS
+
+Standby router configuration:
+  R2(config)# interface g0/1	
+  R2(config-if)# ip address 10.10.10.3 255.255.255.0
+  R2(config-if)# no shutdown
+  R2(config-if)# standby 1 ip 10.10.10.1
+
+  R1(config-if)# standby 1 priority 90 - to set R2 as standby, since R1 has 110 priority value
+  R1(config-if)# standby version 2
+
+  show standby - shows information (VIP, virtual MAC, status, etc) about the HSRP configuration
