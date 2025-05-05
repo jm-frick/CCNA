@@ -1,0 +1,36 @@
+NAT breaks the standard end-to-end IP model and can cause issues with security and with some applications - common with voice and video applications. Application layer firewalls, traversal servers, and proxy servers can help with these issues, but break the IP model. IPv6 was developed to have a 7.9x10^28 larger address space and was designed to support built in security and mobility. A dual stack implementation can have both IPv4 and IPv6 addresses simultaneously and can be implemented long term. First address ends in 0000, last ends in ffff.
+IPv4 and IPv6 are switched and routed the same way, but the processes are separate and use separate routing tables, the biggest difference being the length of the address. Leading zeroes can be removed, 2001:0DB8:0000:0001:0000:0000:0000:0001 can be written as 2001:DB8:0:1:0:0:0:1. All successive zero fields can be shortened to ::, making it 2001:DB8:0:1::1. Successive, all zero fields can only be shortened once to avoid confusion. 
+IPv6 address types are Global Unicast, Unique Local, and Link Local. Global Unicast are similar to IPv4 public addresses - assigned to an individual host and have global reachability unless blocked by a security policy such as on a firewall. They are assigned from the range 2000::/3. Internet authorities assign blocks from the overall 2000::/3 range to organizations, a common assignment for a company is a /48 block, such as 2001:10:10::/48.
+
+Global Unicast Address Configuration
+  R1(config)# ipv6 unicast-routing
+  R1(config)# int f0/0 
+  R1(config-if)# ipv6 add 2001:db8:0:1::1/64  - add static IPv6 address to router
+  R1(config)# int f2/0 
+  R1(config-if)# ipv6 add 2001:db8:1:1::1/64 
+
+  R1# ipv6 show interface brief
+
+IPv6 standards state that addresses assigned to individual hosts should use a /64 mask. IPv6 addresses are 128 bits long, so /64 splits it in half for the network and host portions of the address. If a company is assigned a /48 and uses /64 (18,446,744,709,551,616) host addresses, that leaves 16 bits (65,536) for the company to assign its internal subnets. IPv6 does not support broadcast traffic, uses multicast to all hosts on the local subnet, which is functionally equivalent. 
+EUI-64 Addresses: A Cisco router can generate full IPv6 addresses for itself when given the interface and /64 network to use. The host portion of the address is derived from the interface's MAC address, which is guaranteed to be globally unique. MAC is /48 compared to /64 host portion, so FF:FE is injected in the middle of the /48 MAC address to bring it to 64 bits, the 7th bit is inverted. Not recommended to use on router interfaces due to logical addressing for static router addresses. 
+
+EUI-64 Configuration
+  R1(config)# ipv6 unicast-routing
+  R1(config)# int f0/0 
+  R1(config-if)# ipv6 add 2001:db8:0:2::/64 eui-64
+
+Unique Local IPv6 addresses are similar to IPv4 RFC 1918 private addresses. Not publicly reachable, assigned from the range FC00::/7, hosts should be assigned /64 addresses.
+Link Local IPv6 addresses are valid for communications on that link only. Assigned from range FE80::/10 to FEB0::/10, hosts should be assigned /64 addresses.  Used for communications that should not be forwarded, like routing protocol hello packets and updates. Mandatory on IP{v6 enabled Cisco router interfaces. Automatically generated EUI-64 addresses can be overridden with manual configuration. Link local addresses can be repeated since they are only valid on individual interfaces. 
+
+Manual Link Local address and multiple IPv6 addresses on one interface configuration 
+  R1(config)# int f0/0 
+  R1(config-if)# ipv6 address FE80::1 link-local
+  R1(config-if)# ipv6 address 2001:db8:0:0::1/64
+  R1(config-if)# ipv6 address 2001:db8:0:1::1/64
+
+SLAAC (Stateless Address Auto Configuration) in IPv6, hosts can be assigned addresses through static addressing, DHCPv6, or SLAAC. DHCP servers track their MAC address to IP address assignments, so this is stateful addressing. With SLAAC, hosts learn the /64 subnet their interface is on from their local router and then use this information to generate their own IPv6 RUI-64 address. Modern OS randomize the host portion of the address for privacy reasons. The router does not track which hosts have which IP address, so this is stateless addressing. When a global unicast IPv6 address is configured on an interface, Router Advertisements advertising the network prefix are sent out by default. These ICMP messages are sent to the All Nodes multicast address fro the interface's Link Local address. Hosts can also send a Router Solicitation message to request the information. The router will tell the hosts to use itself as their default gateway; the original implementation did not support any information other than the default gateway address. In practice, a DHCP server is still required to give out information such as DNS server. 
+
+Neighbor Discovery is the IPv6 version of ARP requests and work in the same way. Uses ICMP Neighbor Solicitations and Neighbor Advertisements, Neighbor Solicitation messages are sent to the Solicited Node multicast address which reaches all hosts on the subnet. 
+  R1# show ipv6 neighbors - show learned neighbors via Neighbor Discovery
+
+IPv6 routing is disabled by default on Cisco routers; use the command ipv6 unicast-routing to enable it. IPv6 addresses can still be configured without enabling IPv6 routing and can send and receive IPv6 traffic, but the router will not forward IPv6 traffic to other networks (outside of its own subnet). 
