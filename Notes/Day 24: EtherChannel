@@ -1,0 +1,52 @@
+End hosts are not continuously sending traffic, you can connect fewer uplinks to higher level layers than the number of hosts and still maintain acceptable network performance. Starting rule of thumb recommendation for oversubscription is 20:1 from the access layer to the distribution layer - 20 PCs connected with 1Gbps NICs at the access layer require 1 single 1Gbps uplink to the distribution layer. 4:1 recommended from distribution to core links.
+Switches often have dedicated uplink ports with higher bandwidth than their access ports. 48 1Gbps links, 2 10Gbps uplinks = 2.4:1 ratio. When 2 uplinks are connected, Spanning Tree provides redundancy but not load balancing. If a switch has multiple equal cost paths via the same neighbor towards the Root Bridge, it will select the lowest Port ID, making the second link a blocking port and only allowing a single 10Gbps link.
+
+EtherChannel (Port Channel, LAG: Link Aggregation, Link Bundle) groups multiple physical interfaces into a single logical interface. Spanning Tree sees the EtherChannel as a single interface and does not block any ports, making the 2x10Gbps links into a single 20Gbps link. EtherChannel load balances across all links in the EtherChannel, traffic will fail over to remaining links if a link goes down. EtherChannel load balancing sends the same traffic over the same link, but uses multiple links to spread out traffic load for all connected hosts. 
+NIC Teaming (Bonding, NIC balancing, Link aggregation) combines multiple physical network cards into a single logical interface - used on servers. 
+
+EtherChannel protocols: channel-group command to configure EtherChannel protocol
+LACP (Link Aggregation Control Protocol)
+  Open standard
+  Switches on both sides negotiate the port channel creation and maintenance
+  Preferred method
+PAgP (Port Aggregation Protocol)
+  Cisco proprietary
+  Switches on both sides negotiate the port channel creation and maintenance
+  Not recommended to use
+Static Etherchannel
+  Switches do not negotiate the port channel creation and maintenance, but settings must match on both sides for the port channel to come up
+  Use if LACP is not supported on both sides
+
+Switches on both sides must have matching config: speed and duplex, access or trunk mode, native VLAN and allowed VLANs on trunk, access VLAN on access ports. 
+LACP can be set as Active or Passive. Both active or 1 active and 1 passive will work. Both passive, the port will not come up. Recommended to set both as active.
+  SW1(config)# interface range f0/20 - 24
+  SW1(config-if-range)# channel-group 1 mode active - created port channel 1 and sets ports to active
+
+  SW1(config)# interface port-channel 1
+  SW1(config-if)# switchport mode trunk - configure the settings for the port channel
+
+PAgP interfaces are either Desirable or Auto. Both desirable or 1 desirable and 1 auto will work. Both auto, the port will not come up. Configure both as desirable for less worry about configuration.
+  SW1(config)# interface range f0/20 - 24
+  SW1(config-if-range)# channel-group 1 mode desirable - created port channel 1 and sets ports to desirable
+
+  SW1(config)# interface port-channel 1
+  SW1(config-if)# switchport mode trunk - configure the settings for the port channel
+
+Static interfaces
+  SW1(config)# interface range f0/20 - 24
+  SW1(config-if-range)# channel-group 1 mode on - created port channel 1 and sets ports to on
+
+  SW1(config)# interface port-channel 1
+  SW1(config-if)# switchport mode trunk - configure the settings for the port channel
+
+  SW1# show etherchannel summary - to show EtherChannel configuration information - group, port channel, protocol, ports. S means layer 2 port channel, U means it is in use. 
+
+Multi-Chassis EtherChannel support a shared EtherChannel from different switches. Spanning Tree only sees a single port channel, supports full load balancing and redundancy across all interfaces. StackWise, VSS (Virtual Switching System), and vPC (Virtual Port Channel) are the technologies used. This is how switches are stacked to all run together as one large stack.
+
+Layer 3 EtherChannel allows EtherChannel to be run without Spanning Tree. Default gateway will be configured on the access layer switches.
+  SW1(config)# interface range f0/20 - 24
+  SW1(config-if-range)# no switchport  - this is the command to create at Layer 3
+  SW1(config-if-range)# channel-group 1 mode active/passive/auto/desirable/on - created port channel 1 and sets ports to on
+  SW1(config)# interface port channel 1
+  SW1(config-if)# ip address 192.168.0.1 255.255.255.252
+  SW1(config-if)# no shut 
