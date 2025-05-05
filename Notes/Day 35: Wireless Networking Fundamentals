@@ -1,0 +1,39 @@
+Wireless networks adhere to the IEEE 802.11 standards.
+Types of wireless networks:
+WPAN (Wireless Personal Area Network): Devices are within 10 meters of each other, Bluetooth most commonly used
+WLAN (Wireless Local Area Network): Provides access to a campus (typically wired) network without the need for a cable, devices within 100m of a Wireless Access Point
+WMAN (Wireless Metropolitan Area Network): Covers a large area, such as a city
+Ad Hoc Networks: Two or more wireless stations communicate directly with each other, peer-to-peer network known as an IBSS (Independent Basic Service Set). Because devices are communicating directly with each other, there is a scalability issue. Infrastructure Mode solves the scalability issue by adding Wireless Access Points. Wireless stations can work in either Ad Hoc or Infrastructure Mode, not both simultaneously. 
+
+WiFi Direct allows devices to be connected to an AP and also be part of a peer-top-peer wireless network. It does not operate in Ad Hoc IBSS mode, it is an extension to Infrastructure Mode and is a type of WPAN. Miracast, DLNA (Digital Living Network Alliance) allows music and video streaming, and Direct Print. 
+
+Wireless Bridges can be used to connect areas that are not possible to be connected by cable. Mesh Networks also allow additional coverage; one AP radio is used to serve clients, the other radio connects to the back-haul network. 
+
+Wireless Access Points provide connectivity between wireless stations and between wireless and wired networks. Wireless is half-duplex; only one device can communicate at a time. An Access Point centralizes access and control over a group of wireless devices, the devices and their wireless settings make up a BSS (Basic Service Set). A DS (Distribution System) connects Wireless Access Points to the wired network (usually a switch). Devices with BSS are identified by their BSSID, which is based on their MAC address. The BSA (Basic Service Area) is the wireless coverage area of an Access Point, also known as a wireless cell. SSID (Service Set Identifier) is a unique identifier that gives a name to the wireless network (WLAN). A single Access Point can support multiple SSIDs, different SSIDs can have different security settings and be mapped to different VLANs. APs broadcast information about their WLANs (including SSID and authentication requirements with Beacon frames, can be disabled. ESS (Extended Service Set) allows the same SSID to be supported across multiple APs to give a larger coverage area, APs near each other should use different channels to avoid interference. Roaming allows client stations to roam across APs supporting the same WLANs. 
+
+WLC (Wireless LAN Controllers) allow for multiple APs to be administered and configured in a central location, can monitor the wireless quality and control the channels and power of the APs. Can also detect rogue APs.  Standalone APs are known as Autonomous Access Points, APs with a WLC are known as Lightweight Access Points. The installed software image determines whether an AP is Autonomous or Lightweight. Some of the work is moved from the APs to the WLC, why they are named Lightweight. Real-time traffic is still handled by the AP to provide suitable performance, the rest is handled by the WLC - known as Split MAC.
+Lightweight AP Operations: Client handshake when connecting, beacons, performance monitoring, encryption and decryption, clients in power save. 
+WLC Operations: Authentication, roaming control, 802.11 to 802.3 (WLAN to LAN), radio frequency management, security management, QoS management
+
+Zero Touch Provisioning allows Lightweight APs to discover their WLAN Controller via: DHCP (option 43 gives the IP of the WLC), DNS (cisco-capwap-controller resolves the IP of the WLC), or local subnet broadcast if the WLC is on the same subnet and VLAN. The Lightweight AP will download its configuration from the WLC, including what WLANs it should support and their settings. 
+
+CAPWAP (Control and Provisioning of Wireless Access Points) is an open standard that enables WLCs to manage a collection of APs. Communications are encrypted inside a DTLS CAPWAP tunnel. Uses UDP ports 5246 and 5247. Management traffic between the AP and WLC passes through the CAPWAP tunnel, LAG (Link Aggregation - Etherchannel) is often used on the WLC to switch link. FlexConnect forwards traffic locally when it is configured, useful for small branch offices without a WLC. 
+
+Configure Lightweight AP Switch Config - Autonomous is the same without the MGMT VLANs being created
+  SW1(config)# vlan 21
+  SW1(config-vlan)# name NAME1 - main SSID
+  SW1(config)# vlan 22
+  SW1(config-vlan)# name NAME2  - guest SSID
+  SW1(config)# vlan 10
+  SW1(config-vlan)# name WLC-MGMT
+  SW1(config)# vlan 11
+  SW1(config-vlan)# name AP-MGMT
+  SW1(config)# int g1/0/2	
+  SW1(config-if)# switchport trunk encap dot1q
+  SW1(config-if)# switchport mode trunk
+  SW1(config-if)# switchport trunk allowed vlan 10,11,21,22
+
+WiFi operates in 2.4 and 5 GHz frequencies, allocated for industrial, scientific, and medical use so radio operator license is not required. ISM devices do not have regulatory protection against interference from other users of the band. 2.4 GHz channels are 22 MHz wide, 5 GHz channels are 20 MHz wide - 5 GHz have less overlap. Neighboring APs should be separated by at least 1 channel. Channels can be bonded (40, 80, 160 MHz wide) to multiply data rates by 2x, 4x, 8x. 2.4 GHz has greater range and propagation (penetration) but is more crowded. 5 GHz has higher throughput but shorter range and worse propagation. Site surveys should be used to discover coverage area and potential sources of interference.
+
+Wireless Security: WEP (Wired Equivalency Privacy) - 1999, RC4 encryption. WPA (WiFi Protected Access - 2003, RC4 encryption, TKIP (Temporal Key Integrity Protocol). WPA2 - 2004, AEC encryption, CCMP (Counter Cipher Mode with Block Chaining Message Authentication Code protocol). WPA3 - 2018, AES encryption, CCMP, protection against KRACK (Key Reinstallation) attacks. 
+	WPA Personal uses pre-shared keys (password). WPA Enterprise uses a AAA server with RADIUS and dot1x. 
