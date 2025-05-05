@@ -1,0 +1,50 @@
+WANs are geographically distributed networks that connect multiple LANs together. A VPN provides a virtual tunnel between private networks across a shared public network. Traffic travelling over the tunnel is encrypted and only readable by the authorized users on both sides. Data can be shared as if they were connected using a dedicated private link. Usually less expensive than a dedicated link. 
+
+A Site-to-site VPN connection is terminated on a router or firewall in each office. Software does not need to be installed on user desktops, IPSec is used for encryption. 
+IPSec Tunnel: open standard, does not support multicast (no routing protocols, only static routes)
+GRE (Generic Routing Encapsulation) over IPSec tunnel: adds support for multicast to IPSec
+IPSec VTI (Virtual Tunnel Interface): Cisco proprietary, simplified configuration, supports multicast
+DMVPN (Dynamic Multipoint VPN): Cisco proprietary. Scalable simple hub and spoke style configuration enables direct full mesh connectivity between offices
+FlexVPN: Cisco proprietary, similar to DMVPN, newer technology
+GETVPN: Cisco proprietary. Scalable centralized policy for VPN over non-public infrastructure like MPLS.
+
+Remote Access VPN connections are between a router or firewall in the office and VPN software installed on an individual user's device. The user can use the VPN software from anywhere with internet connectivity. Usually uses SSL, (sometimes IPSec) for encryption. 
+
+Multiple options are available for connecting geographically dispersed offices together; not all options are available in all locations. What is common in one region may be legacy in another; different providers may use different terminology. Optical fiber is used for long distances over copper when available, FFTx services: Fiber to the Home, Premises, Building, or Neighborhood. 
+DWDM (Dense Wavelength Division Multiplexing) combines (multiplexes) multiple optical signals into one optical signal transmitted over a single fiber strand. Each signal is assigned a different wavelength. Allows more capacity to be added to the existing infrastructure without upgrades, is used in all modern long haul optical connections. 
+Dark Fiber - many service providers laid optical fiber cabling in the past, then found they did not require it. DWDM was a major cause of this. The unused cabling can be offered to customers as Dark Fiber. 
+Legacy WAN Connections: PSTN (Public Switched Telephone Network  - dial up), ISDN (Integrated Services Digital Network - dial up for corporations, higher bandwidth), Frame Relay, ATM (Asynchonous Transfer Mode), X.25.
+
+Routers typically come with on-board Ethernet cards; more can be added. There are many different types that are very similar; be careful when selecting your card. 
+
+Leased Line is a dedicated physical, direct point-to-point connection between two locations. It has a fixed, reserved bandwidth which is not shared with anyone else; the same bandwidth in both directions. Company may own, but most commonly leased from a service provider. Typically the first location is a corporate office, the second is: another corporate office, a data center connected to the companies WAN providing multipoint connectivity between offices, or a data center connected to the internet providing internet connectivity and optionally corporate office connectivity over VPN. Leased Lines use a serial connection requiring the correct physical interface card in the router - they do not use Ethernet - common options: T1 (1.544 Mbps), T2(6 Mbps), T3 (45 Mbps), T4 (275 Mbps). 
+Leased Line Benefits: Fixed, reserved bandwidth not shared with anyone else. Provider has SLA for uptime. Leased Line Drawbacks: More expensive, longer lead time for installation, copper or fiber to CPE (Customer Premises Equipment) is more common.
+
+Satellite connections share the same characteristics as leased lines, expensive and low bandwidth, but may be the only option in some locations. 
+
+MPLS (Multi Protocol Label Switching) VPN: Usually operated by a service provider. Traffic from multiple customers can travel over the provider's shared MPLS network, so this is a VPN service. Different levels of SLA for uptime and traffic delay and loss are often available at different price points. Typically, Ethernet connections and provide full mesh topology by default. 
+Layer 3 MPLS runs across providers core on PE and P routers. Customer CE routers do not run MPLS. Customer CE routers peer at layer 3 with the provider's PE routers. Static routes or a routing protocol runs between the CE and PE. The PE router looks like another customer router to the customer; the provider's core routers are transparent to the customer. Customer sites are in different IP subnets. PE = Provider Edge network, CE = Customer Edge network, P = Provider
+Layer 2 MPLS VPN - the CE devices do not peer with the PE devices. The entire provider network is transparent to the customer. The provider network acts like a giant switch. Customer sites are in the same IP subnets. 
+
+VPLS (Virtual Private LAN Service): Multipoint layer 2 VPN
+VPWS (Virtual PseudoWire Service) Point to point layer 2 VPN
+
+PPPoE (Point-to-Point Protocol over Ethernet) is commonly used in DSL deployments to allow corporate networks to function as a backup if the main link goes down, runs over a normal DSL connection so there is no SLA. Also used for smaller branch offices that can't justify a large link, but still gives access to the corporate network. Configured either on the DSL modem or on the router. 
+
+Topology options: 
+Hub and Spoke (Star) - all traffic goes through a main hub
+Advantages: Simplicity, centralized security policy
+Disadvantages: Single point of failure, suboptimal traffic flow
+Redundant Hub and Spoke - two hubs connected together
+Advantages: Removes single point of failure, centralized security policy
+Disadvantages: Higher cost, suboptimal traffic flow
+Full Mesh - every office is connected to every other office
+Advantages: Optimal traffic flow
+Disadvantages: Higher complexity and cost
+Partial Mesh - More important sites are connected and redundant; less important sites only have a single link
+
+Internet Redundancy Options: 
+Single Homed - one connection, single point of failure. 
+Dual Homed - two links, two routers, one service provider. 
+Multihomed - same as Dual Homed, but each link has a different service provider. 
+Dual Multihomed - two service providers, and every router is connected to every service provider
