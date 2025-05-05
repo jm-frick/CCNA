@@ -1,0 +1,32 @@
+Layer 3 is responsible for routing packets to their destination and for QoS. 
+IP is the best known layer 3 protocol, it is connectionless with no acknowledgments at layer 3. Other protocols include ICMP (Internet Control Message Protocol) and IPSec (IP Security).
+IP addressing is a logical addressing scheme which is implemented at layer 3. The network designer uses IP addressing to partition the network into smaller subnets. Improves performance and security and makes troubleshooting easier. 
+3 main IP traffic types: Unicast - to a single destination host, Broadcast - to all hosts on the subnet, Multicast - to multiple interested hosts. 
+
+Decimal to binary:	256	128	64 32	16 8 4 2 1
+
+IPv4 Addresses are 32 octets long, written in 4 octets in dotted decimal format. Each octet is 8 bits long and a value ranging from 0 to 255, broken into 128 64 32 16 8 4 2 1. 
+To set the boundary between logical networks (subnets), the IP address is combined with a Subnet Mask.
+
+Subnet Mask:
+A host can send traffic directly to another host on the same subnet via switches.
+For a host to send traffic to another host in a different subnet, it must be forwarded by a router. 
+The host needs to understand if the destination is on the same or a different subnet in order to know how to send it. The subnet mask is used for this.
+Subnet mask is 32 bits long, and can be written in dotted decimal or slash (CIDR) notation. 
+Always begins with contiguous 1's, 1's and 0's are not mixed (10101) in a subnet mask. Can be 11110000, but not 10100110.
+
+Network and Host portion:
+A host's IP address is divided into a network portion and a host portion.
+The subnet mask defines where the boundary is.
+Example IP: 192.168.10.15, 255.255.255.0 - host portion after .10
+If the host wants to communicate with another IP address that begins with 192.168.10.x, it knows it is on the same subnet and can send traffic directly.
+If the host wants to communicate with another host with any other network address (example: 192.168.11.20), it knows to send the traffic via a router.
+The host portion of the address specifies the individual host and must be unique on that subnet.
+Hosts do not have to be numbered sequentially. 
+For a network portion 10.10.10.x, hosts can be 10.10.10.10 and 10.10.10.20.
+Two hosts cannot have the same IP address.
+Can have 10.10.10.10 on one subnet and 10.10.20.10 on another subnet.
+All 0's in the host portion designates the network (gateway) address and cannot be allocated to a host.
+All 1's in the host portion designates the directed broadcast address and cannot be allocated to a host.
+
+Slash (CIDR - Classless Inter-Domain Routing) uses a slash instead of a full subnet mask. /24 = 255.255.255.0
