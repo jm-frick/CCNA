@@ -1,0 +1,38 @@
+An ACL (Access Control List) identifies traffic based on characteristics of the packet such as source IP address, destination address, and port number. The router or switch can take an action based on the result of the ACL. ACLs were originally used as a security feature to allow or block traffic, by default all traffic is allowed. Now, ACLs are also used in software policies when traffic needs to be identified, such as QoS for VoIP or translating to a different IP address in a NAT policy. ACLs are made up of ACE (Access Control Entities), a series of permit or deny rules. Each ACE is written in a separate line. It is good practice to add a remark to an ACL to note what the ACL is used for.
+
+Numbers on an ACL: 1-99 (IP Standard Access List), 100-199 (IP Extended Access List), 1300-1999 (IP Standard Access List - expanded range), 2000-2699 (IP Extended Access List - expanded range). Standard ACLs reference the source address only, Extended ACLs check based on the protocol, source address, destination address, and port number. 
+  R1(config)# access-list 1 deny 10.10.10.10 0.0.0.0 - deny a single host on the 10.10.10 network
+  R1(config)# access-list 1 permit 10.10.10.0 0.0.0.255 - allow all other hosts on the 10.10.10 network, wildcard for 255.255.255.0
+
+The default wildcard mask for a standard ACL is 0.0.0.0, meaning an individual host address. Do not forget to enter the wildcard when specifying an IP subnet. 
+  R1(config)# access-list 100 deny tcp 10.10.10.10 0.0.0.0 gt 49151 10.10.50.10 0.0.0.0 eq 23 - gt = greater than source port - Windows uses port 49152+ for random port numbers for outbound traffic, eq = equal to source port, this would deny host 10.10.10.10 (source address) to use telnet (port 23) to access host 10.10.50.10 (destination address)
+  R1(config)# access-list 100 permit tcp 10.10.10.0 0.0.0.255 gt 49151 10.10.50.10 0.0.0.0 eq telnet - permit traffic on 10.10.10 to access 10.10.50.10 via telnet
+There is no default wildcard mask for extended ACLs, must be specified. 
+
+ACLs can be referenced by number or name, named ACLs being with the command ip access-list instead of access-list.
+  R1(config)# ip access-list standard ACLNAME  - names the ACL and begins configuration
+  R1(config-std-nacl)# deny 10.10.10.0 0.0.0.0
+  R1(config-std-nacl)# permit 10.10.10.0 0.0.0.255
+
+  R1(config)# no ip access-list NAMEORNUMBER - removes an ACL, will still be in the running config unless rebooted
+
+  R1# show access-lists 100 - shows ACL information for specified ACL, shows what is permitted or denied
+
+ACLs are applied at the interface level with the Access-Group command. Can be applied outbound (to the end hosts - to the servers or networking devices) or inbound (from the external hosts), maximum of one ACL per interface per direction. 
+  R1(config)# int g0/1 
+  R1(config-if)# ip access-group 100 out - to configure outbound ACL
+  R1(config-if)# ip access-group 101 in - to configure inbound ACL
+
+  R1# show ip interface g0/1 | include access list - shows ACL information
+
+ACLs are read from top to bottom, hosts needing to be excluded must be at the top of the ACE. Most specific entries at the top, then more generic as it goes down the list. ACEs are automatically numbered in increments of 10. You can inject ACEs in different number increments, this is important for getting the ACEs in the correct order. 
+  R1(config)# ip access-list extended ACLNAME 
+  R1(config-std-nacl)# 15 deny tcp host 10.10.10.11 host 10.10.50.10 eq telnet - 15 at the beginning injects the ACE number
+
+There is an implicit "deny any any" rule at the bottom of ACLs. If an ACL is not applied to an interface, all traffic is allowed; if an ACL is applied, all traffic is denied except for what is explicitly allowed. Some organizations include an explicit deny all at the end of ACLs to log illegal traffic. 
+  R1(config)# access-list 1 permit 10.10.10.0 0.0.0.255
+  R1(config)# access-list 1 deny any log - denies all other traffic and logs it
+  .
+  R1(config)# access-list 1 permit any - permits all traffic other than any explicitly stated deny entries
+
+ACLs applied to an interface do not apply to traffic that originates from the router itself. 
