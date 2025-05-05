@@ -1,0 +1,21 @@
+DHCP is a client/server protocol that automatically provides hosts with IP addresses and other configuration information (subnet mask, gateway, etc). DHCP is defined by RFC 2131. Benefits include: centralized and automated IP configuration rather than manually assigning to every host prevents errors like typos and address conflicts, can assign additional IP configuration values using DHCP options, efficient handling of clients that must be updated frequently (laptops with wireless networking), forwarding of initial DHCP messages by using a DHCP relay agent eliminates the need for a DHCP server on every subnet. Not used for hosts that need to have a constant IP address like servers or routers 
+Client: DHCP Discover (Broadcast traffic) -> Server: DHCP Offer (Unicast or Broadcast) -> Client: DHCP Request (Broadcast) -> Server: DHCP Ack (Unicast or Broadcast)
+
+Cisco routers can be set up as DHCP servers. 
+  R1(config)# ip dhcp excluded-address 10.10.10.1 10.10.10.10 - exclude addresses for devices that need to have static IP addresses, first is starting address in range, second is end
+  R1(config)# ip dhcp pool 10.10.10.0_Clients - 10.10.10.0_Clients is just a name, can be called anything you want it to be
+  R1(dhcp-config)# network 10.10.10.0 255.255.255.0
+  R1(dhcp-config)# default-router 10.10.10.1
+  R1(dhcp-config)# dns-server 10.10.20.10
+
+  show ip dhcp pool - shows currently leased address information
+  show ip dhcp binding - shows which devices are assigned what IP address
+
+Typically, an external DHCP server is used instead of using a Cisco router. Routers do not forward broadcast traffic by default; interface receiving the DHCP request must be configured to forward the requests (interface facing the client) with the command R1(config-if)# ip helper-address 10.10.20.10 which is the IP address for the DHCP server. 
+
+Cisco routers are typically manually configured with static IP addresses. An exception to this is where an office is connected to the Internet but has not bought static public IP addresses (because it does not contain publicly available servers which need static IP addresses for incoming connections). The office still requires a public IP to allow internal hosts outbound connections through NAT. In this case, the router will receive the public IP address on its outside interface from the ISP via DHCP. Configuration for DHCP routers is:
+  R1(config)# interface 0/0 - this is the interface where router is connected to the ISP 
+  R1(config-if)# ip address dhcp
+  R1(config-if)# no shutdown
+
+  show dhcp lease - shows the IP lease information
