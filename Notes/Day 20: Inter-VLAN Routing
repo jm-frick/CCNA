@@ -1,0 +1,27 @@
+Router with separate interfaces disadvantages: Need a separate physical interface for every VLAN - likely to run out of interfaces. Traffic routed within the campus has to go up and down physical Ethernet cables to the router. 
+
+Router on a stick: Uses virtual sub interfaces on a single underlying physical interface. Interface is f0/1.10, where the first number (of the number after the slash) is the physical interface number, and the second is the VLAN number.
+  R1(config)# interface f0/1
+  R1(config-if)# no ip address
+  R1(config-if)# no shut
+  R1(config-if)# interface f0/1.10 
+  R1(config-subif)# encapsulation dot1q 10 - 10 is the VLAN number, change this to match the VLAN number
+  R1(config-subif)# ip address 10.10.10.1 255.255.255.0
+
+Layer 3 Switch: Does not use a physical interface for routing, uses a SVI (Switched Virtual Interface) to act as the default gateway. Traffic routed within the campus is routed across the switch backplane, does not need to travel over physical cables to an external router. Will likely still need an external router for WAN connections. 
+Configure L3 Switch Routing:
+  SW1(config)# ip routing
+  SW1(config)# interface vlan 10
+  SW1(config-if)# ip address 10.10.10.1 255.255.255.0
+Configure L3 Switch WAN Routing:
+  SW1(config)# interface f0/1
+  SW1(config-if)# no switchport
+  SW1(config-if)# ip address 10.10.100.1 255.255.255.0
+  SW1(config)# ip route 0.0.0.0  0.0.0.0 10.10.100.2
+
+  R1(config)# interface f0/1
+  R1(config-if)# ip address 10.10.100.2 255.255.255.0
+  R1(config)# interface f0/2
+  R1(config-if)# ip address 203.0.113.1 255.255.255.0
+  R1(config)# ip route 0.0.0.0 0.0.0.0 203.0.113.2
+  R1(config)# ip route 10.10.0.0 255.255.0.0 10.10.100.1
