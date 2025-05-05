@@ -1,0 +1,51 @@
+NAT was implemented as a temporary workaround to mitigate the lack of IPv4 addresses until organizations had time to transition to IPv6. 
+Inside Local Address is the IP address actually configured on the inside host's OS. Inside Global Address is the NAT'd address of the inside host as it will be reached by the outside network. Outside Local Address is the IP address of the outside host as it appears to on the inside network; on 1 way NAT, it shows as the same address as Outside Global because the router does not know about the NAT configuration on the inside network. Outside Global Address is the IP address assigned to the host on the outside network by the host's owner. 
+
+Static NAT is a permanent one-to-one mapping usually between a public and private IP address, used for servers which must accept incoming connections.
+  R1(config)# int f0/0 
+  R1(config-if)# ip nat outside
+  R1(config)# int f1/0 
+  R1(config-if)# ip nat inside
+  R1(config)# ip nat inside source static 10.0.1.10 203.0.113.3
+
+  R1# show ip nat translations
+  R1# show ip nat statistics - shows information on how many addresses have been translated
+
+Dynamic NAT uses a pool of public addresses which are given out on an as needed FCFS basis, used for internal hosts which need to connect to the internet but not accept incoming connections. If you have 30 hosts, you would need 30 public IP addresses, or else hosts would need to wait until an IP was available to use.
+  R1(config)# int f0/0 
+  R1(config-if)# ip nat outside
+  R1(config)# int f2/0 
+  R1(config-if)# ip nat inside
+
+  R1(config)# ip nat pool NAME 203.0.113.4 203.0.113.14 netmask 255.255.255.240 - name and configure the pool of addresses
+
+  R1(config)# access-list 1 permit 10.0.2.0 0.0.0.255 - create an ACL which references the internal IP addresses to be translated
+
+  R1(config)# ip nat inside source list 1 pool NAME - associate the ACL with the NAT pool
+
+  R1# clear ip nat translation - removes dynamic translations from the translation table, useful for troubleshooting, often required if trying to edit NAT config
+  R1# clear ip nat translation * - removes all dynamic translations
+
+PAT (Port Address Translation) allows the same public IP address to be reused. PAT is an extension of NAT that permits multiple internal devices to be mapped to a single public IP address. Because different inside hosts are assigned different port numbers, the router knows which host to send return traffic to, even when the public IP address is the same. 
+Dynamic NAT with Overload uses PAT to allow more clients to be translated than IP addresses are available in the NAT pool - when addresses run out, it will use the highest IP address in the pool and track which source port number (randomized by the operating system) was used in the translation table for return traffic. 
+  R1(config)# int f0/0 
+  R1(config-if)# ip nat outside
+  R1(config)# int f2/0 
+  R1(config-if)# ip nat inside
+
+  R1(config)# ip nat pool NAME 203.0.113.4 203.0.113.14 netmask 255.255.255.240 - name and configure the pool of addresses
+
+  R1(config)# access-list 1 permit 10.0.2.0 0.0.0.255 - create an ACL which references the internal IP addresses to be translated
+
+  R1(config)# ip nat inside source list 1 pool NAME overload - associate the ACL with the NAT pool, specify NAT Overload for PAT
+
+PAT with a single dynamic IP address, the configuration is similar to Dynamic NAT with Overload but translates to the outside interface address rather than a pool of addresses. You must translate to the outside interface rather than than a specific IP address because a DHCP address can change. 
+  R1(config)# int f0/0 
+  R1(config-if)# ip address dhcp
+  R1(config-if)# ip nat outside
+  R1(config)# int f1/0 
+  R1(config-if)# ip nat inside
+
+  R1(config)# access-list 1 permit 10.0.2.0 0.0.0.255 - create an ACL which references the internal IP addresses to be translated
+
+  R1(config)# ip nat inside source list 1 interface f0/0 overload - associate the ACL with the NAT pool, specify NAT Overload for PAT
