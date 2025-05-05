@@ -1,0 +1,39 @@
+DHCP Snooping enabled, DHCP server responses are dropped if they don't arrive on a trusted port. 
+  SW1(config)# ip dhcp snooping - enable DHCP Snooping globally
+  SW1(config)# ip dhcp snooping vlan 10 - enable DHCP Snooping on the VLAN, both VLAN and global must be done
+  SW1(config)# int f0/1
+  SW1(config-if)# ip dhcp snooping trust - to configure DHCP Snooping on interfaces
+
+DAI (Dynamic ARP Inspection) prevents Man-in-the-Middle ARP spoofing - bad actor spoofs the MAC address of a valid end host and receives traffic meant for the valid host. With DHCP Snooping enabled, the switch inspects the DHCP traffic and keeps track of which IP addresses were assigned to which MAC addresses. If an invalid ARP traffic tries to pass through the switch, the switch drops the traffic. DAI is not performed on trusted ports, enable this for non-DHCP clients.
+  SW1(config)# int 0/1	
+  SW1(config-if)# ip arp inspection trust
+  SW1(config)# ip arp inspection vlan 10
+
+When 802.1X is enabled, only authentication traffic is allowed on switch ports until the hose and user and authenticated. When the user enters a valid username and password, the switch port transitions to a normal access port in the relevant VLAN. User = supplicant which sends request to switch = authenticator which forwards to an authentication server (ICE - Identity Services Engine). 
+Best practice is to administratively shut down unused switch ports; this prevents someone from plugging into the network and getting access.  
+
+Port Security enables an administrator to specify which MAC address or addresses can send traffic to an individual switch port. This can be used to lock down to a particular host or hosts. It is easy to spoof a MAC address, so locking ports down to a specific host is not usually Port Security's main role in production networks. Port Security can also configure individual switch ports to allow only a specified number of source MAC addresses to send traffic to the port - can learn connected MAC addresses. This prevents users from adding Wireless Access Points or other shared devices onto the network. 
+Can only be added to an access port, switchport mode access command to make interfaces access ports. 
+  SW1(config)# int 0/1	
+  SW1(config-if)# switchport port-security - enables Port Security on an interface, recommended to enable on all ports
+  SW1(config-if)# switchport port-security violation protect OR restrict - changes from the default Shutdown violation
+Configured like this with no additional parameters, only one MAC address is allowed to transmit on the port. Current MAC can be disconnected and replaced, not locked to one MAC address. 
+  SW1# show port-security int f0/2
+There are three options when an unauthorized MAC address sends traffic to the port. Shutdown (default) - the interface is error-disabled, blocking all traffic. Protect - traffic from unauthorized addresses is dropped; traffic from allowed addresses is forwarded. Restrict - traffic from unauthorized addresses is dropped, logged, and the violation counter is incremented; traffic from allowed devices is forwarded. 
+  SW1(config)# errdisable recovery cause psecure-violation - automatically recover from error-disabled state
+  SW1(config)# errdisable recovery interval 600
+The default max number of MAC addresses allowed to send traffic is one. 
+  SW1(config)# int 0/1	
+  SW1(config-if)# switchport port-security maximum 2 - changes the max number of MAC addresses on a Port Security enabled interface
+Can be configured statically to allow certain MAC addresses to lock down to a specific host.
+  SW1(config)# int 0/1	
+  SW1(config-if)# switchport port-security
+  SW1(config-if)# switchport port-security mac-address 1111.2222.3333
+  SW1(config-if)# switchport port-security maximum 1
+Sticky MAC addresses add the learned MAC address to the running configuration. Save to the startup config to make them permanent. 
+  SW1(config)# int 0/1
+  SW1(config-if)# switchport port-security
+  SW1(config-if)# switchport port-security mac-address sticky
+
+  SW1# show port-security address - shows MAC address Port Security information 
+  SW1# show port-security - shows a summary of all ports with Port Security enabled on a switch
