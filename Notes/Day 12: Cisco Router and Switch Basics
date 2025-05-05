@@ -1,0 +1,50 @@
+A router provides connectivity between different IP subnets. An IP address must be configured on the interfaces in each subnet. Interfaces are down by default on routers. Both links must be created for the router to connect to different subnets.
+interface FastEthernet0/0
+ip address 192.168.0.1 255.255.255.0
+no shutdown
+
+interface FastEthernet0/1
+ip address 192.168.1.1 255.255.255.0
+no shutdown
+
+A layer 2 switch is not IP routing aware, but does support a single IP address for management. The IP address and subnet mask is configured on the (SVI Switched Virtual Interface) for the default VLAN 1. A default gateway also needs to be configured to allow connectivity to other subnets. Interfaces are up by default on switches. 
+interface vlan 1
+ip address 192.168.0.10 255.255.255.0
+no shutdown
+exit
+ip default-gateway 192.168.0.1
+Additional commands need to be entered to allow Telnet or SSH access.
+
+Interface speed and duplex is set to auto by default, and both sides of a link should auto-negotiate to full duplex and the fastest available speed. Best practice is to manually set speed and duplex on ports connected to another network infrastructure device or server. Both sides of the link have to match speed and duplex settings; do not mix half, full, or auto settings.
+interface FastEthernet 0/1
+duplex full
+speed 100
+
+Verification commands to check configurations
+show running-configuration
+show ip interface brief
+show run interface vlan 1 OR FastEthernet 0/1
+show interface FastEthernet0/1
+show version
+
+CDP (Cisco Discovery Protocol) is a Cisco proprietary layer 2 protocol used to share information with other directly connected Cisco equipment, such as the OS version and IP address. This aids in troubleshooting by allowing administrators to map out how Cisco devices are connected to each other. Enabled by default. 
+SW1(config) # cdp run - enables CDP
+SW1(config) # no cdp run - disable CDP on device globally
+SW1(config-if) # no cdp enable - disables CDP on an interface
+
+show cdp
+show cdp neighbors
+show cdp neighbors detail
+LLDP (Link Layer Discovery Protocol) is an open standard which provides similar information to CDP. Depending on the switch and LLDP version, it may be enabled by default. It is only supported on physical interfaces, not virtual like CDP. Can only discover up to one device per port, and can discover Linux servers which CDP cannot.
+SW1(config) # lldp run - enables LLDP
+SW1(config) # no lldp run - disable LLDP on device globally
+SW1(config-if) # no cdp transmit - disables LLDP transmission on an interface
+SW1(config-if) # no cdp receive -  disables LLDP receiving on an interface
+
+show lldp
+show lldp neighbors
+show lldp neighbors detail
+
+Layer 1 troubleshooting: handle cables with care not to break them. Common layer 1 problems include: the interface is administratively down. The cable is disconnected. The device is powered off. Broken connectors causing loose connections. Bent or stretched cables leading to broken wires or fibers. Electromagnetic Interference (EMI) from sources such as motors or microwaves can cause errors in transmission (newer cables are less susceptible to this). 
+On a show ip interface brief command, administratively down means the port is down and can be brought up by no shutdown. down/down indicates a layer 1 issue - check cabling on both ends, check if port is shut down, and check device power. up/down indicates a layer 2 issue or speed mismatch - check interface configuration matches on both sides of the link. 
+If the interface is reporting excessive errors, it could be a layer 1 or 2 issue. Check cable integrity and configuration mismatches on both sides of the link. Speed or duplex mismatches can cause excessive errors.
