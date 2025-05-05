@@ -1,0 +1,12 @@
+In Band Management: Connecting over the production network for managing devices.
+Out of Band Management: Connecting over a dedicated management network for device management.
+Console Cable: DB9 to RJ-45; now typically use USB instead of DB9 via adapter or cable. New console cables are USB to Mini-USB.
+User Exec> upon login -> Privileged Exec# on enable command -> Global Configuration(config)# on configure terminal command -> Interface Configuration(config-int) on interface command
+
+CTRL A moves the cursor to the beginning of the line.
+end to drop all the way down to enable level
+When copying files on IOS, it merges with the current file. To replace a file (like startup-config), use erase first.
+
+IOS OS System Image is stored in Flash. 
+Startup Configuration is stored in NVRAM.
+Running Configuration is stored in RAM (loaded into RAM from the Startup Config when the device boots)
