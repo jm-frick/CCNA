@@ -1,0 +1,62 @@
+Campus LAN should be designed for scalability, performance, and security. Topology is split into Access, Distribution, and Core layers. 
+Access Layer is switches with hosts (desktop computers, servers, IP phones, etc) plugged in. High port count at affordable cost. Client access security measures are enabled here. Uplink to the Distribution Layer switches. 
+Distribution Layer switches serve as an aggregation point for the Access Layer and provide scalability. Typically deployed in redundant pairs, downstream Access Layer switches connected to both. Software policy (QoS) enabled here. Uplink to Core Layer. 
+Core Layer switches are typically deployed in redundant pairs, downstream Distribution Layer switches connected to both. Traffic between different parts of campus travels through the Core Layer, designed for speed and resiliency. Software policy slows down the switch and should be avoided here. 
+Collapsed Core can be used in smaller campuses; Distribution and Core are combined. 
+Spine-Leaf Design is similar to Collapsed Core, but offers higher scalability and resiliency. All Tier 1 (Leaf) switches are attached to Tier 2 (Spine) switches).
+
+VLANs can increase performance and security in the LAN by limiting broadcast traffic to the VLAN from where it was sent. VLANs segment the LAN into separate broadcast domains at Layer 2. Typically, there is a one-to-one relationship between a subnet and a VLAN.
+Access Ports, also called untagged ports, are configured with one specific VLAN on switch interfaces where end hosts are plugged in. Configuration is all done on the switch; the end host is not VLAN aware; however, Virtual Machines are VLAN aware. 
+Trunk Ports (dot1q/802.1Q or ISL (Inter-Swtich Link) - old), also called tagged ports, carry traffic for multiple VLANS. When the switch forwards traffic to another switch, it tags the Layer 2 Dot1Q header with the correct VLAN. The receiving switch will only forward traffic out ports that are in that VLAN. The switch removes the Dot1Q tag from the Ethernet frame when sending to the end host. 
+	The 802.1Q tag is inserted between the Source and Type/Length fields of the Ethernet frame, is 4 bytes (32 bits) in length, consists of two main fields: TPID (Tag Protocol Identifier) and TCI (Tag Control Information). The TCI consists of 3 sub fields, PCP (Priority Code Point) used for COS (Class Of Service) for priority traffic, DEI (Drop Eligible Indicator) to know what frames can be dropped, VID (VLAN ID) identified the VLAN the frame belongs to. 
+All ports are in VLAN 1 by default, but needs to be changed to have any benefits of VLANs. 
+Native VLAN is used to assign any traffic which comes in untagged on a trunk port. This used to be required when a switch was connected to a hub; hubs are Layer 1 and not VLAN aware. Default Native VLAN is 1. There are security issues with using VLAN 1 as Native, so the best practice is to change the Native VLAN to any unused VLAN. Native VLAN must match on both sides of a trunk for it to come up. 
+
+DTP (Dynamic Trunking Protocol): If two Cisco switches are cabled together, they can negotiate a trunk connection using Cisco's DTP. It is recommended to configure switch ports manually. 
+VTP (VLAN Trunking Protocol) allows you to add,edit, or delete VLANs on switches configures at VTP servers, and have other switches configured as VTP clients synchronize their VLAN database with them. Can be convenient for large campuses; port level VLAN configuration still needs to be performed. BE CAREFUL, if a switch with a higher VLAN database revision number and VTP enabled (VTP is enabled by default) is introduced, it will delete all VLANs in the lower revision number VTP. If using both DTP and VTP, the VTP domain name has to match on neighbor switches for trunks to be formed by DTP. 
+VTP Modes: VTP Server can add, edit, or delete VLANs. VTP Client syncs its VLAN database from the Server with the highest revision number. VTP Transparent does not participate in the VTP domain. DOes not advertise or learn VLAN information but will pass it on. Can add, edit, or delete VLANs in its own local VLAN database. 
+
+To create a VLAN:
+  SW1(config)# vlan 10
+  SW1(config-vlan)# name NAME
+To configure a single port:
+  SW1(config)# interface g0/1
+  SW1(config-if)# switchport mode access
+  SW1(config-if)# switchport access vlan 10
+To configure multiple ports:
+  SW1(config)# interface range Gig 0/1 - 5
+  SW1(config-if)# switchport mode access
+  SW1(config-if)# switchport access vlan 10
+Trunk port configuration: needs to be done on both sides of the link
+  SW1(config)# interface g0/10
+  SW1(config-if)# description Trunk to SW2
+  SW1(config-if)# switchport trunk encapsulation dot1q - only used for older switches, not needed for modern switches
+  SW1(config-if)# switchport mode trunk
+  SW1(config-if)# switchport trunk allowed vlan 10,20 - limits the allowed VLANs on the trunk port 
+Voice VLAN configuration:
+  SW1(config)# interface g0/1
+  SW1(config-if)# description IP Phone
+  SW1(config-if)# switchport mode access
+  SW1(config-if)# switchport access vlan 10
+  SW1(config-if)# switchport voice vlan 20
+Native VLAN configuration:
+  SW1(config)# vlan 199
+  SW1(config-vlan)# name Native
+
+  SW1(config)# interface g0/10
+  SW1(config-if)# description Trunk to SW2
+  SW1(config-if)# switchport trunk encapsulation dot1q
+  SW1(config-if)# switchport mode trunk
+  SW1(config-if)# switchport trunk native vlan 199
+Show VLAN information:
+  show vlan brief - shows information on all VLANs on switch
+  show interface g0/1 switchport - shows information on a single interface
+DTP configuration:
+  SW1(config-if)# switchport mode dynamic auto - forms a trunk if the neighbor switch is set to trunk or desirable, trunk will not be formed if both sides are set to auto. Default on newer switches.
+  SW1(config-if)# switchport mode dynamic desirable - forms a trunk if the neighbor switch port is set to trunk, desirable ,or auto. Default on older switches.
+  SW1(config-if)# switchport nonegotiate - disables DTP
+VTP Configuration:
+  SW1(config)# vtp domain DOMAINNAME
+  SW1(config)# vtp mode server OR client OR transparent
+
+  show vtp status - to show VTP information
