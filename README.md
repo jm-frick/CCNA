@@ -19,6 +19,5 @@ Network Fundamentals: 90%
 
 ______________________________________________________________________________________________________________
 Chapter Notes:
-______________________________________________________________________________________________________________
 
 [Day1: Host to Host Communications](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%201%3A%20Host%20to%20Host%20Communications)
