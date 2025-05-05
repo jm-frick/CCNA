@@ -1,5 +1,6 @@
 # CCNA
-This is a repository of all the resources used to study for the CCNA exam. A combination of Neil Anderson's course, Jeremy's IT lab, Wendell Odom's OCG, and Boson ExSim were used to compile the notes here.
+This is a repository of all the resources used to study for the CCNA exam. 
+A combination of Neil Anderson's (Udemy Course)[https://www.udemy.com/course/ccna-complete], Jeremy's IT Lab (YouTube Course)[https://www.youtube.com/watch?v=H8W9oMNSuwo&list=PLxbwE86jKRgMpuZuLBivzlM8s2Dk5lXBQ], Wendell Odom's (OCG)[https://www.ciscopress.com/store/ccna-200-301-official-cert-guide-library-9781587147142], and (Boson ExSim)[https://www.boson.com/practice-exam/200-301-cisco-ccna-practice-exam] were used to study and compile the notes here.
 ______________________________________________________________________________________________________________
 
 
