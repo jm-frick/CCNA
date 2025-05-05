@@ -1,0 +1,75 @@
+OSPF is a Link State routing protocol that supports large networks. It has a very fast convergence time. Messages are sent via multicast. Is an open standard, and uses Dijkstra's Shortest Path First algorithm to determine the best path to learned networks. The choice for most companies IGP comes down to EIGRP or OSPF, with OSPF is the most commonly used. All routers in the network develop the same map of the network. 
+
+OSFP Operations
+Discover neighbors
+Form adjacencies
+Flood Link State Database (LSDB)
+Compute Shortest Path
+Install best routes in routing table
+Respond to network chances
+
+OSPF packet types: Hello packets will be sent out and listed for when OSPF is enabled on an interface and form adjacencies with other OSPF routers on the link via Multicast on 224.0.0.5 (all OSPF routers) every 10 seconds by default. DBD (Database Description) will tell adjacent routers the networks they know about with a DSB packet. LSR (Link State Request) will be sent to a neighbor if there is any missing information about the network, and the neighbor will respond with an LSA (Link State Advertisement) to update the requesting router. LSAs are organized in a LSDB (Link State Database). An Area is a collection of routers and links that share the same LSDB. A LSU (Link State Update) contains a list of LSAs which should be updates, used during flooding. Receiving routers acknowledge LSAs with LSAck (Link State Acknowledgement). 
+The Backbone Area is a special area that all other areas must connect to. Routers with all interfaces in the same area are called Internal Routers. Routers with interfaces in multiple areas are called ABRs (Area Border Routers) - it is recommended to only connect up to 2 areas to an ABR, more can overburden the router. Routers connected to the Backbone Area, including ABRs, are called Backbone Routers. An ASBR (Autonomous System Boundary Router) is an OSPF router that connects the OSPF network to an external network. 
+An Intra-Area Route is a route to a destination inside the same OSPF area. An Interarea Route is a route to a destination in a different OSPF area. All OSPF interfaces in the same subnet must be in the same area. 
+On point-to-point links, OSPF will form full adjacencies. On multiaccess segments (such as Ethernet) where there will be multiple routers, it is inefficient for all routers to form full adjacency with each other. In this case, a master router, called a DR (Designated Router), to hold all OSPF adjacencies and send LSUs - a different DR will be selected for each multiaccess segment. The router with the highest priority will be selected; with numbers between 1-255, default priority is 1, the highest router ID (Loopback if set, IP if no Loopback) is used in case of a tie. A BDR (Backup Designated Router) is also selected from the second highest router ID. DR and BDR establish full neighbor state with all routers on the network segment. The neighbor state of other neighbors remains in 2-Way and does not directly exchange routes with each other. When a link state changes on a router, it sends a multicast LSU packet to 224.0.0.6 (all designated routers), then DR multicasts the update to 224.0.0.5 (all OSPF routers). 
+  R1(config-if)# ip ospf priority 100 - to manually set priority for DR 
+  R1(config-if)# ip ospf priority 0 - to ensure router will never be selected to be the DR
+
+OSPF Protocol: Protocol numbers in an IP header TCP 6, UDP 17, OSPF 89.
+OSPF Type field in a packet: Type 1 is Hello, Type 2 is Database Descriptor (DBD), Type 3 is LSR, Type 4 is LSU, Type 5 is LSAck. LSAs do not have their own packet type, they are contained inside LSUs. 
+  show ip interface g0/0 will show the MTU settings, show interface g0/0 will not.
+  debug ip ospf adj to show adjacencies in the debug output
+  R1(config)# router ospf 1 - to begin OSPF configuration. 1 refers to the instance/Autonomous System (Process ID) of OSPF, different interfaces on a router can run different instances. Each instance has a separate Link State Database. Typically, only one instance is configured on OSPF routers. The Process ID is locally significant; it does not have to match on the neighbor router to form an adjacency. 
+  R1(config-router)# network 10.0.0.0 0.0.255.255 area 0 - OSPF uses a wildcard mask for the subnet, the command does not default to using a classful boundary - you must enter a wildcard mask. 
+
+  R1# sh run | section ospf - to view OSPF information in the running config. 
+  R1# show ip ospf interface brief - shows OSPF process ID, area, IP and mask, cost, state, and neighbors for each interface.
+  R1# show ip ospf neighbor - shows OSPF neighbors, useful for verification when setting up OSPF.
+  R1# show ip ospf database - useful for troubleshooting to see if routes have been formed. 
+
+OSPF routers identify themselves using an OSPF router ID in the the form of an IPV4 address. Default to the highest IP of any loopback interfaces on the router, or highest IP if loopback does not exist. Can manually specify Router ID. Best practice is Loopback or manually set Router ID. Manual commands:
+  R1(config)# router ospf 1
+  R1(config-router)# router-id 2.2.2.2
+Then reload or clear ip ospf processes to take effect. 
+To set passive interface in OSPF:
+  R1(config)# router ospf 1
+  R1(config-router)# passive-interface f2/0
+  R1(config-router)# network 203.0.113.0 0.0.0.255 area 0
+Default Route Injection:
+  R4(config)# ip route 0.0.0.0 0.0.0.0 203.0.113.2
+  R1(config)# router ospf 1
+  R1(config-router)# default-information originate
+
+Because Link State IGPs learn the entire network including every router, its interfaces, and what they connect to, it can cause issues with large networks - uses too much router memory, and network changes cause all routers to reconverge which takes time and CPU resources. To mitigate this, OSPF supports a hierarchical design which segments large networks into smaller areas to solve this problem. Each router maintains full information about its own area, but only summary information about other areas. 
+An OSPF network can be divided into sub-domains called areas. An area is a logical collection of OSPF networks, routers, and links that have the same area identification. A router within an area must maintain a topological database for the area to which it belongs. The router does not have detailed information about network topology outside of its area, which thereby reduces the size of its database. OSPF Areas must be contiguous - areas must be contained in one location, cannot split an area between multiple locations.
+
+A two-level hierarchy is used:
+Transit Area (Backbone/area 0): Does not typically contain end users.
+Regular Areas (non-backbone areas): Used to connect end users to the Transit area. By default, all traffic goes through the Transit area.
+Small networks do not require a hierarchical design, and all routers can be in area 0. 
+
+Backbone Routers in OSPF have all interfaces in Area 0. Maintain a full LSDB of other routers and links in their own area. 
+ABR (Area Border Router) have interfaces in multiple areas. Separate the LSA flooding zones. Becomes the primary point for area address summarization - ALL network summary is done on ABRs. Functions regularly as the source for default routes. Maintains the LSDB for each area to which it is connected. Ideally, ABRs are connected to 2 areas only, the backbone and 1 other area, with 3 areas being the upper limit. ABRs do not automatically summarize. If you do not configure summarization, all routes are flooded everywhere.
+Manually configure summarization:
+  R2(config)# router ospf 1
+  R2(config-router)# network 10.1.0.0 0.0.255.255 area 0
+  R2(config-router)# network 10.0.0.0 0.0.255.255 area 1
+  R2(config-router)# area 0 range 10.1.0.0 255.255.0.0
+  R2(config-router)# area 1 range 10.0.0.0 255.255.0.0
+Routes to other areas show as O IA in #show ip route.
+
+Normal Area Routers maintain a full LSDB of other routers and links in their own area. They lean inter area routes to to their areas from their ABRs. 
+ASBR (Autonomous System Boundary Router) is a router which redistributes into OSPF, takes routes from other IGPs and redistributes them into OSPF. Show in #show ip route s external routes, O*E1 or O*E2. 
+The rate that Ethernet interfaces physically transmit at is set by the speed command. Gig interfaces transmit at 1000 Mbps by default, FastEthernet at 100 Mbps by default. Using a speed 10 command on a FE interface will physically transmit at 10 Mbps. 
+The clock rate command sets the physical transmission rate for serial interfaces. Serial interfaces transmit at 1.544 Mbps by default, clock rate 64000 will transmit at 64 Kbps. 
+Interfaces also have a default bandwidth; the bandwidth usually matches the physical transmission rate of the interface. Does NOT affect physical transmission rate. Affects the software policy on a router, such as which path will be selected by EIGRP or OSPF, or how much bandwidth will be guaranteed to a traffic type by QoS. 
+
+OSPF uses the outbound interfaces (interfaces attached to the router heading in the direction of the traffic) to calculate the cost.
+Cost = Reference Bandwidth / Interface Bandwidth - default reference bandwidth is 100 Mbps, FE defaults to 1 (100/100), a T1 link defaults to 64 (100/1.554). OSPF treats all interfaces of 100 Mbps or faster as equal. FE, GE, 10GE, all default to a cost of 1. To get around this, use the following command:
+  R1(config)# router ospf 1
+  R1(config-router)# auto-cost reference-bandwidth 100000
+Set this on all routers so they are all using the same metric.
+You can manipulate the OSPF metric by manually changing the bandwidth or OSPF cost on interfaces. It is recommended to use cost because the bandwidth setting can affect many features other than OSPF - such as QoS. 
+
+OSPF Router ID order of priority: 1. Manual configuration, 2. Highest IP address on a loopback interface, 3. Highest IP address on a physical interface.
+  R1(config-if)# ip mtu 1460 to change the MTU size on an interface
