@@ -1,0 +1,90 @@
+STP (Spanning Tree Protocol) is a layer 2 technology that prevents network loops. Every switch on the network has STP ports. STP automates failover as well as performing loop prevention. If an access layer switch's uplink to SW1 fails, the link to SW1 will transition from a blocking to a forwarding state. Industry standard, enabled by default on all vendor switches. Switches send out BPDUs out all ports when they come online, used to detect other switches and potential loops - switch will not forward traffic out any port until it is certain it is loop free. 
+
+Spanning Tree Open Standards:
+802.1D Spanning Tree Protocol (STP): The original STP implementation, uses one Spanning Tree for all VLANS in the LAN.
+802.1w Rapid Spanning Tree Protocol (RSTP): Significantly improved convergence time but does not support load balancing. One Spanning Tree for all VLANs. 
+802.1s Multiple Spanning Tree Protocol (MSTP): Enables grouping and mapping VLANs into different Spanning Tree instances for load balancing. 
+Spanning Tree Cisco Proprietary: No Cisco version supports grouping multiple VLANs into the same instance.
+Per VLAN Spanning Tree Plus (PVST+): Enhancement to 802.1D. USes a separate Spanning Tree instance for every VLAN. Default on most Cisco switches.
+Rapid Per VLAN Spanning Tree Plus (RPVST+): Enhancement to 802.1w RSTP. Significantly improved convergence time over PVST+, uses separate Spanning Tree instance for every VLAN.
+
+Most modern Cisco switches support PVST+, RPVST+, and MSTP. PVST+ is the default on most Cisco switches.
+  SW1(config)# spanning-tree mode MODE(mst, pvst, rapid-pvst)
+  SW1# show spanning-tree summary
+  SW1# show spanning-tree vlan NUMBER - specify VLAN number to view specific VLAN Spanning Tree information (Root ID, Bridge ID, etc)
+
+Hubs had no layer 2 awareness and did not learn MAC addresses. Switches were originally called Bridges, which segmented LANs that were built with hubs. A switch is a multi-port bridge. Spanning Tree was invented back when bridges were in use, so it uses that terminology (Root Bridge and BPDU (Bridge Protocol Data Units)). 
+When a port first comes online, it will be in a blocking state, STP will detect any potential loops, if no loop the port will transition to forwarding. Can take up to 50 seconds. The BPDU contains the switches Bridge ID which uniquely identifies the switch on the LAN, is comprised of the switch's MAC address and an administrator defined Bridge Priority Value from 0-65535, 32768 is the default. 
+A Root Bridge is elected based on switch priority value. In the case of a tie, a switch with the lowest MAC address will be assigned. Switches build a loop free forwarding path to the root bridge. Higher bandwidth links are preferred; long mode (32 bit value) has been added to be more granular in the bandwidth selection. Short mode (16 bit value) is default; change on ALL SWITCHES if changing the default short mode. Each switch's exit interface on the lowest cost path to the root bridge is selected as its Root Port. Ports on the neighbor switch opposite the root port are Designated Ports; root ports point toward the root bridge, designated ports point away from the root bridge. All ports on the root bridge are always designated ports. Root ports and their opposing designated ports are the most direct path to the root bridge. On the remaining links, the switches determine which of them has the least-cost path to the root bridge. Any ports which have not been selected as a root or designated port pair would potentially form a loop and are selected as Blocking Ports (ALSO CALLED ALTERNATIVE PORTS) - Blocking Ports have the highest cost path or highest bridge ID). Network traffic is only sent on root port links; all other links are blocked. Spanning Tree only blocks ports on one side of the blocked link. BPDUs continue to be sent over the link from the designated port but not from the blocked port - other traffic cannot use the link. If a blocked port stops receiving better BPDUs, it will unblock and transition to being a designated port. 
+Spanning Tree is built with the root bridge on top. All switches forward traffic on their best (lowest cost) path to the root bridge. Higher cost paths are blocked. Root Path Cost is a switches cumulative cost for a specific path to reach the root bridge. If root cost is the same, the switch with the lowest bridge ID (priority, then MAC address) will make its port designated; the other switch will make its port blocking (non-designated). 
+Root Cost: To determine root cost for root ports:
+10 Mbps Ethernet (E): 100
+100 Mbps FastEthernet (FE): 19
+1 Gbps Ethernet (G): 4
+10 Gbps Ethernet (10G): 2
+You do not count the cost on the receiving interface, only the sending (outgoing) interface. All ports on the root bridge have a cost of 0. The ports connected to another switches root port MUST be designated. Because the root port is the switch's path to the root bridge, another switch must not block it. When using port ID to break a tie, the NEIGHBOR switch's port ID is used, NOT the local switch port ID. Every collision domain has a single STP designated port. 
+
+One switch is elected as the root bridge; all ports on the root bridge are designated ports (forwarding state). It is selected by:
+Lowest bridge ID (lowest priority number, then lowest MAC address in the case of a tie)
+Each remaining switch will select ONE of its interfaces to be its root port (forwarding state). Ports across from the root port are always designated ports. Root ports are selected by:
+Lowest root cost (E, FE, G, 10G)
+Lowest neighbor bridge ID (lowest priority number, then lowest MAC address in the case of a tie)
+Lowest neighbor port ID (port number)
+Each remaining collision domain (connected interfaces) will select ONE interface to be a designated port (forwarding state). The other port in the collision domain will be non-designated (blocking state).  Collision domain designated ports selected by:
+Interface on the switch with the lowest root cost (E, FE, G, 10G)
+Interface on the switch with the lowest bridge ID (lowest priority number, then lowest MAC address in the case of a tie)
+
+Spanning Tree does not load balance. If a switch has multiple equal cost paths to the root bridge, it will select the neighbor switch with the lowest bridge ID. 
+BPDU header for PVST+: Dst: PVST+ (01:00:0c:cc:cc:cd) - regular STP BDPU header: Dst: STP (0180.c200.000)
+Hubs had no layer 2 awareness and did not learn MAC addresses. Switches were originally called Bridges, which segmented LANs that were built with hubs. A switch is a multi-port bridge. Spanning Tree was invented back when bridges were in use, so it uses that terminology (Root Bridge and Bridge Protocol Data Units). 
+Because Spanning Tree selects paths pointing towards the root bridge, it acts as a center point of the LAN. Best practice is to ensure the high-end core switches are selected as the first and second most preferred Root Bridge. Root Bridge election can be manipulated by setting the Root Bridge priority; default is 32768, the lowest MAC used in a tie - not preferred, this often selects the oldest switch.Valid values are 0 - 61440, must be in increments of 4096. Lower values mean a higher priority. HSRP should be configured to match the Spanning Tree path. 
+
+Configure root and secondary Spanning Tree root bridges:
+  R1(config)# spanning-tree vlan 1 root primary - USE ONE OR THE OTHER, both of these commands do the same thing, one just specifies the priority number
+  OR
+  R1(config)# spanning-tree vlan 1 priority 24576
+
+  R2(config)# spanning-tree vlan 1 root secondary
+  OR
+  R2(config)# spanning-tree vlan 1 priority 28672
+
+When a port becomes active, it takes Spanning Tree 30 seconds by default to ensure it will not form a loop and transition it to the forwarding state. A device needs at least two bridges LAN connections to form a layer 2 loop - no need to wait 30 seconds for end hosts. Ports you are sure will not loop can transition to a forwarding state immediately when it becomes active by enabling Portfast. It is best practice to enable Portfast for end hosts. 
+Portfast ports are only for access ports connected to end hosts. It allows a port to move immediately to Forwarding, bypassing the Listening and Learning states (and the 30 second timer as a result). Trunk ports are typically connected to other switches and should not have Portfast enabled; however, switch ports connected to some specialized hosts such as Router-on-a-stick or virtualized hosts are configured as trunk ports to carry multiple VLANs and should be Portfast ports. 
+BPDU Guard can be enabled to guard against network loops caused by added hardware to Portfast ports. If a BDPU is received on the port, it will be error disabled immediately. Switches send BDPUs, end hosts do not. Shut and no shut ports to bring error disabled ports back up. 
+Portfast Edge ports transition to a forwarding state immediately. If the port receives a BPDU, it immediately loses its edge status and become a normal Spanning Tree port. Different from BPDU Guard which error disables the port if a BPDU is received. 
+Root Guard prevents an unintended switch from becoming the Root Bridge. If a port where Root Guard is enabled receives BDPUs that are superior than the current Root Bridge, it will transition the port to "root-inconsistent" and not forward any traffic over the port. When Root Guard is triggered, it blocks the entire switch and needs to be manually corrected. 
+BDPU Filter is similar to BDPU Guard in that it detects unexpected BDPUs, but does not error disable the port when detected. When enabled globally, it applies to Portfast interfaces only - if a BDPU is received, BDPU Filer is disabled and acts as a normal interface. When enabled on an interface, it will not send or receive BDPUs, in effect disables Spanning Tree. It is typically not recommended to enable BDPU FIlter - a use case would be a single downstream connection to a legacy switch which is causing STP issues.
+Loop Guard prevents unidirectional (one fiber strand in a pair down) link problems on Cisco switches available in PVST+, RPVST+, and MSTP (all supported Spanning Tree Protocols on Cisco switches). UDLD (Unidirectional Link Detection) does the same but is not part of Spanning Tree, sends keep alive messages. If BPDUs are not received on a Loop Guard protected Root Port or Blocking Port, it will be placed in the loop-inconsistent state with all traffic blocked rather than becoming a designated port. As well as unidirectional link failures, Loop Guard also protects against software failure or data corruption preventing BPDUs being sent on a link. The port is automatically re-enabled when BPDUs are received again. If Loop Guard is enabled on a switch, it disables Root Guard on the port (because they do the opposite things) - if both are needed, enable on the interface level. 
+
+Rapid STP does not use delay times like PVST (30 seconds/50 seconds), it uses proposal/agreement sync mechanism to rapidly build the Spanning Tree and respond to topology changes. Newer Spanning Tree versions are backwards compatible with older versions. Has UplinkFast (immediately moves an interface to the forwarding state) and BackboneFast (immediately expires age timers to rapidly forward superior BDPUs) built in. RSTP backup ports are standbys of the Designated port on a shared segment (for example with a hub). Uses discarding (blocking), learning, and forwarding. Root port remains the same as STP, as does the designated port. Non-desginated ports are now split into two sections: alternate port is a discarding port that receives superior BDPU from another switch - same as blocking ports in STP. Backup port is a discarding port that receives a superior BDPU from another interface on the same switch. 
+RSTP Root Cost: To determine root cost for root ports:
+10 Mbps Ethernet (E): 2,000,000
+100 Mbps FastEthernet (FE): 200,000
+1 Gbps Ethernet (G): 20,000
+10 Gbps Ethernet (10G): 2,000
+100 Gbps: 200
+1 Tbps: 20
+
+Configure Portfast:
+  SW1(config)# interface g0/0
+  SW1(config-if)# spanning-tree portfast - enable Portfast on the interface
+  SW1(config-if)# spanning-tree bdpuguard enable - enables BDPU guard on the interface
+
+  SW1(config)# spanning-tree portfast default - enables Portfast on the switch globally for all ACCESS PORTS, not trunk ports
+  SW1(config)# no spanning-tree portfast - disable Portfast globally, can be done on interface level as well
+  SW1(config)# spanning-tree portfast bdpuguard default - enables BDPU Guard globally
+
+  SW1(config-if)# spanning-tree portfast trunk - to configure Portfast on a trunk port
+
+  SW1(config)# errdisable recovery cause bdpuguard - enable automatic recovery of error disabled ports, NOT RECCOMENDED
+  SW1(config)# errdisable recovery interval 30
+
+  SW1(config)# interface f0/2	
+  SW1(config-if)# spanning-tree guard root - enable Root Guard
+
+  SW3(config)# spanning-tree portfast bdpufilter default - enable BDPU Filtering globally, in reality this is never used
+  SW3(config)# interface g0/0	
+  SW3(config)# spanning-tree bdpufilter enable - enables BDPU Filter on an interface, essentially disables Spanning Tree on the interface
+
+  SW1(config)# spanning-tree loopguard default - enable Loop Guard globally
+  SW1(config-if)# spanning-tree guard loop - to enable on an interface
