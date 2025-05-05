@@ -1,0 +1,21 @@
+Traditional automation and IPS systems are not good at learning new threats or anomalies, can only use static and pre-defined roles. AI can help with complex, dynamic network tasks through pattern recognition, learning, reasoning, discovering meaning, problem solving, and self correction. General Intelligence, where a machine has the overall intelligence of a human for a hypothetical task, current applications are Narrow AI, which perform a specific task. 
+
+Machine Learning is a subnet as AI. MAthematical and statistical methods that enable machines to mimic intelligent human behavior by learning from data without being explicitly programmed. Can analyze huge data sets, identify patterns, relations, and anomalies. Automatically improves as it learns. Must be trained. 
+
+ML can analyze network related data and learn network patterns to detect anomalies. AI functions can then report on anomalies and automatically take action on them, predict future patterns and issues such as upcoming congestion, and recommend optimal settings. 
+Predictive AI utilizes algorithms and modelling to analyze past and current data to forecast future events and behaviors. ML is used to understand the data and predict what is likely to occur in the future. Can be used for proactive maintenance and performance optimization for network operations. 
+
+Generative AI utilizes patterns and relations learned from past data to create new outputs such as text, images, auto, and video. Typically used for training, given a set of labeled data, and learns to generate similar content. Can be used to generate network traffic pattern simulations to identify potential issues under different conditions and help plan future upgrades without affecting the real network. Can create optimized network settings and configurations based on current conditions, planned upgrades, or a solution for an issue. Three types of Generative AI models built on Neural Networks:
+Transformer model - typically work with text
+  Tracks relationships in sequential data; learn what is appropriate to come next in sequences
+General Adversarial Networks (GANs) - typically work with visual data
+Variational Auto Encoders (VAEs) - typically work with visual data
+
+Neural Networks are based on how the brain works. They contain artificial neurons called nodes, which are arranged in a series of layers. Input and output layer with hidden layers in between. Input layer receives data that needs to be analyzed; nodes are interconnected from one layer to another. Each connection between nodes has a weight that signifies its relative importance. Data transfers through the layers until producing an output. Deep Learning is a type of ML based on a Neural Network with at least 2 hidden layers (4 layer minimum). Backpropagation is used to signal back through the network that the weight have to be changed - this is done when the Neural Network produces an incorrect result or error and uses a mathematical function to iteratively fine tune the weights of connections until accurate output is consistently produced. 
+
+RAG (Retrieval-Augmented Generation) - LLMs are susceptible to hallucination where they generate incorrect output data. Ways to reduce hallucinations: Build a new model from scratch (very expensive), fine tuning to load additional relevant data to an existing LLM and use techniques such as backpropagation to tune it. RAG enhances the accuracy and currentness of an existing LLM by looking up an external database, can be used by nearly any LLM. Internal knowledge bases can be used, which remain private. Can be used for configuration generation, troubleshooting, up-to-date documentation generation, and predictive maintenance in network operations.
+
+Cisco AIOps: Secure Network Analytics (formerly SteathWatch), Catalyst Center, Meraki, Nexus Dashboard, AppDynamics, ThousandEyes. 
+
+devnetsandbox.cisco.com
+developer.cisco.com/learning
