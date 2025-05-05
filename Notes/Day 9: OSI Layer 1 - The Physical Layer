@@ -1,0 +1,5 @@
+Layer 1 conveys the bit stream - electrical impulse, light, or radio signals - through the network at the electrical and mechanical level. Provides the hardware means of sending and receiving data, including defining cables, interface cards, and physical aspects. 
+
+Ethernet LAN can be carried over coaxial (not used now), twisted copper pair (UTP or STP), fiber, or wireless. UTP/STP use RJ-45 and have a max transmission length of 100m. Straight through cables are used to connect end points to a switch, crossover cables are used to connect devices directly together directly. Modern switches support Auto MDI-X, where the receive and transmit signals are reconfigured automatically to yield the expected result.
+
+Fiber optic cables support longer distances and higher bandwidth requirements - separate buildings in a campus, switch to switch inside a building, etc. Single mode supports higher bandwidth and longer distances, but is more expensive. Multimode is cheaper but covers less distance and is lower bandwidth. 
