@@ -1,0 +1,61 @@
+The global coordination of Internet IPv4 addressing is performed by IANA (Internet Assigned Numbers Authority).
+The bigger the host portion of the network, the more hosts we can have. If the subnet mask is /8, we have 24 bits to allocate to hosts. If the subnet mask is /24, we only have 8 bits to allocate to hosts. 
+Class A, B, and C include all the addresses that are available to be assigned to hosts. Class D and E are reserved.
+
+Class A Addresses:
+Class A addresses are assigned to networks with a very large number of hosts. 
+The high order (the first bit, 128 in the first octet) in a class A address is always set to zero.
+Default subnet mask is /8
+Valid address ranges from 1.0.0.0 to 126.0.0.0 /8 - allows for 126 networks and 16,777,214 hosts per network
+Example Class A address: 2.0.0.10/8
+0.0.0.0/8 range is reserved and signifies "this network"
+0.0.0.0 to 0.255.255.255 are not valid host addresses
+127.0.0.0/8 range is reserved for Loopback Addresses
+127.0.0.1 to 127.255.255.255 are not valid host addresses
+Both "this network" and Loopback Addresses wiped out 33,554,428 possible host addresses from the global address pool
+
+Class B Addresses:
+Assigned to medium-sized to large networks
+The two high order bits in a class B address are always set to binary 1 0
+Default subnet mask is /16
+Valid address ranges from 128.0.0.0 to 191.255.0.0 /16 - allows for 16,384 networks with 65,534 hosts per network
+Example Class B address: 131.192.0.0/16
+
+Class C Addresses:
+Used for small networks
+The three high order bits in a class C address are always set to binary 1 1 0
+Default subnet mask is /24
+Valid network address range from 192.0.0.0 to 223.255.255.0 /24  - allows for 2,097,152 networks and 254 hosts per network
+Example Class C address: 195.0.192.0/24
+Can be allocated as is for a real world network, or subnetted into smaller subnets
+
+Private Addresses (RFC 1918): 
+There is a range of reserved private addresses in each class
+These are valid to be assigned to a host, but they are not routable on the public internet
+Originally designed for hosts in a closed private network with no internet connectivity
+Class A: 10.0.0.0 to 10.255.255.255 with a default subnet mask of /8   255.0.0.0
+Class B: 172.16.0.0 to 172.31.255.255 with a default subnet mask of /12   255.240.0.0
+Class C: 192.168.0.0 to 192.168.255.255 with a default subnet mask of /16   255.255.0.0
+
+Class D Addresses:
+Reserved for IP multicast addresses
+The four high order bits in a class D address are always set to binary 1 1 1 1
+These addresses are not allocated to hosts, and there is no default subnet mask
+Valid addresses range from 224.0.0.0 to 239.255.255.255
+Example Class D address: 227.1.192.5
+
+Class E Addresses:
+Experimental and reserved for future use
+The high order bits in a class E address are set to 1 1 1 1
+These addresses are not allocated to hosts, and there is no default subnet mask
+Addresses range from 240.0.0.0 to 255.255.255.255
+Example Class E address: 243.1.192.10
+255.255.255.255 is the broadcast address for "this network"
+
+IP Address Class Summary:
+Class	  First Octet	  Slash	   Dotted Decimal
+ A		  1 - 126	      /8	     255.0.0.0
+ B		  128 - 191	    /16	     255.255.0.0
+ C	  	192 - 223	    /24	     255.255.255.0
+ D		  224 - 239	     -	      -
+ E		  240 - 255	     -	      -
