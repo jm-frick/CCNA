@@ -1,0 +1,55 @@
+When a routing protocol is used, routers automatically advertise their best paths to known networks to each other. Routers use this information to determine their own best path to known destinations. When the network state changes (link goes down, new subnets added, etc), routers update each other and determine new best paths automatically.
+Dynamic routes are more scalable than static routes; using purely static routes is only feasible in very small environments. Real world both dynamic and static are used, dynamic for the majority and static for small use cases. 
+There are two types of routing protocols IGPs (Interior Gateway Protocols) and EGP (Exterior Gateway Protocols). Interior are used for routing within an organization; exterior are used for routing between organizations over the Internet. The only EGP used today is BGP (Border Gateway Protocol), which is a Path Vector Routing Protocol.
+
+IGPs can be split into two different types: 
+Distance Vector routing protocols send each router's directly connected neighbors a list of all known networks along with its own distance to each of those networks. Does not advertise the entire network topology. A router only knows its directly connected neighbors and the lists of networks those neighbors have advertised. Called "routing by rumor". 
+  RIP (Routing Information Protocol), EIGRP (Enhanced Interior Gateway Routing Protocol)
+Link State routing protocols, each router described itself and its interfaces to its directly connected neighbors. This information is passed unchanged from one router to another. Every router learns the full picture of the network, including every router, its interfaces, and what they connect to. Puts more load on the routers because of increased stored information.
+  OSPF (Open Shortest Path First), IS-IS (Intermediate System - Intermediate System).
+All IGPs do the same job, which is to advertise routes within an organization and determine the best path or paths An organization will typically pick one IGP, but some organizations have multiple IGPs in effect (example: because of a merger), information can be redistributed between them. This should be avoided when possible. 
+
+show ip protocols - shows routing protocol information
+
+Wildcard masks are inverse subnet masks. 255.255.255.0 is 0.0.0.255 as a wildcard.
+
+Metrics are used by routers to determine the best path to route traffic when received by the same routing protocol. Each IGP uses a different metric, but in all the lowest metric is preferred (lower number, better path). Each router takes this information and makes an independent calculation of its own best path. If a best path destination is lost, it will be removed and the next best path will be used.
+  RIP (Routing Information Protocol) uses hop count as its metric. Maximum hop count by default is 15, and more than 15 will be marked as unreachable, can be changed. RIP is typically only used in small or test environments since it does not take the bandwidth of links into account - only uses hop count. 
+  OSPF (Open Shortest Path First) uses cost as the metric, which is automatically derived from interface bandwidth by default. Cost can be manually configured to manipulate the path. Open standard, supported by all vendors routers, and is the most commonly deployed IGP today. More complicated to maintain than EIGRP. 
+  IS-IS (Intermediary System - Intermediary System) also uses cost as the metric, but it is not automatically derived from bandwidth; all links have an equal cost by default. If you do not manually set link costs, the path with the lowest hop count will be used. Typically only used by service provider networks or large organizations with their own MPLS network who choose it because of its scalability. 
+  EIGRP (Enhanced Interior Gateway Routing Protocol) uses bandwidth and delay of links to calculate their metric, load and reliability can also be considered but are ignored by default. A fixed delay value is used based on the interface bandwidth; the protocol does not dynamically measure current delay. Delay can be manually configured to manipulate the path.Simple to maintain, calculates changes quickly, and metric calculation will normally choose the best path by default. Mostly only supported on Cisco routers. 
+
+debug ip IGPNAME - to enter debugging mode
+no debug ip IGPNAME  - to exit debugging mode
+
+ECMP (Equal Cost Multiple Path), when multiple paths to a destination have and equal metric, the router will enter all paths into the routing table.  ECMP will load balance the outbound traffic to the destination over different paths. All IGP routing protocols will perform ECMP by default. EIGRP is the only routing protocol capable of Unequal Cost Multi Path, but must be manually configured to do so. 
+
+Administrative Distance is used when routes to the same destination are received from different routing protocols and is a measure of how trusted the routing protocol is. If paths to the same destination are received from different routing protocols, their metrics cannot be compared (example, a RIP hop count of 5 cannot be compared to an OSPF cost of 60). If routes to the same destination are received via different routing protocols, the protocol with the lowest AD wins. 
+Route source               Default AD
+Connected Interface        0
+Static Route               1
+Eternal BGP                20
+EIGRP                      90
+OSPF                       110
+IS-IS                      115
+RIP                        120
+
+Floating Static Routes can be configured as a backup for a route learned via a routing protocol. Static routes have an AD of 1, which would be preferred over routes learned by an IGP. Floating Static Routes allow the AD to be changed to a higher value, so they are not used over an IGP learned route. 
+ip route 10.0.1.0 255.255.255.0 10.1.3.2 115 - the last number is the manually set AD.
+
+Connected Route: When the router receives a packet for a remote destination, it checks all available routes. If a route is available for the remote destination, the router forwards the packet from the interface that is mentioned in the route. For example, if the router receives a packet which destination address belongs to the network 10.0.0.0/8, the router forwards the packet from the GigabitEthernet0/0 interface.
+
+Local Route: For example, the IP address 10.0.0.1/8 is configured on the GigabitEthernet0/0 interface. To forward packets to the GigabitEthernet0/0 interface, the router adds a local route for this IP address. Since a local route represents a specific local object, the router uses the IP address of the object. The router uses the prefix /32 in the local route. The prefix /32 represents a host address.
+Local routes display the internal layout of the router. Connected routes show how the router is connected to the network. A connected route represents the network address. It uses the actual subnet prefix (mask). A local route represents the host address. It always uses the subnet prefix /32. A router always uses a connected route to forward packets out of the router. A router never uses a local route to send packets out of the router.
+
+Loopback interfaces are logical interfaces. They allow IP address assignment to a router or layer 3 switch which is not tied to a physical interface. Because they don't have any physical attributes which can fail, loopback interfaces never go down. They are logical so they cannot be in the same subnet as other devices, usually assigned a /32 subnet mask to avoid wasting IP addresses. It is best practice to assign a loopback address to a router. The loopback is commonly used for traffic that terminates on the router itself (management traffic, VoIP, BGP peering, etc). Provides redundancy if there are multiple paths to the router, and is used to identify the router (Router ID) in OSPF. 
+R1(config)# interface loopback 0 to set loopback address
+R1(config-if)# ip address 192.168.1.1 255.255.255.255 to set IP and /32 subnet mask
+
+Adjacencies: IGP routing protocols are configured under global configuration mode and then enabled on individual interfaces. When the routing protocol is enabled on an interface, the router will look for other devices on the link that are also running the routing protocol. The router does this by sending out and listening for hello packets. When a matching peer is found, the routers form an adjacency with each other and exchange routing information. Modern routing protocols use multicast for hello packets; this is more efficient than broadcast that was previously used. Only routers that are running the same routing protocol will process the packet. 
+
+Passive interfaces allow you to include an IP subnet in the routing protocol without sending updates out of the interface. It is best practice to configure loopback interfaces as passive interfaces, as it is impossible to form an adjacency because they are not physical interfaces. This prevents wasted resources from sending hello packets to loopback addresses. Passive interfaces are used on: loopback interfaces and physical interfaces where the device on the other side belongs to another organization or devices where routing information does not need to be sent but do want internal devices to know about the link. Set passive interfaces for interfaces that do not connect to a router. 
+R1(config-router)# passive-interface loop0
+
+Route Precedence is decided in this order: Longest prefix (most specific), administrative distance, metric. If all routes receive the exact same precedence (the same prefix, AD, and metric), the router will perform Equal Cost Load Balancing for the traffic.
+show ip route IPADDR will show the route information for the given IP address.
