@@ -1,0 +1,70 @@
+Subnetting practice:
+subnettingquestions.com
+subnetting.org
+subnettingpractice.com
+
+CIDR (Classless Inter-Domain Routing) removed the fixed /8, /16, and /24 requirements for address classes and allowed them to be split (subnetted) into smaller networks. CIDR allows aggregate blocks of networks to be advertised on the internet, advertises one route instead of all hosts on the network.
+2^borrowed subnet bits to calculate the number of available subnets. If a class C network uses a /28 subnet mask, then 4 bits were borrowed from the default /24. 2^4 = 16 available subnets. 
+2^remaining subnet bits - 2 to calculate the number of available hosts due to the network address (first IP) and broadcast address (last IP) being reserved. /27 is 2^5 = 32 - 2 = 30. 
+/31 subnets break the rules, only two hosts available per subnet, since there are only two available hosts there is no need for a network or broadcast address. 
+
+On the exam, if asked for 2 hosts, use /30 unless explicitly stated to use /31
+
+Magic Number Method: Take the subnet mask in dotted decimal, subtract by 256, and that tells how large the subnets go up by. Example: 255.255.255.240, 256 - 240 = 16. 16 subnets, 14 hosts. 255.255.255.224, 256 - 224 = 32. 32 subnets, 30 hosts.
+192.168.15.0/28 subnetted
+2^4 = 16 subnets, 2^4 = 16 - 2 14 hosts
+   Network		Hosts			         Broadcast
+192.168.15.0	192.168.15.1-15.14		192.168.15.15
+192.168.15.16	192.168.15.17-15.31	192.168.15.32
+192.168.15.33	192.168.15.33-15.46	192.168.15.47
+192.168.15.48	192.168.15.49-15.63	192.168.15.64 - etc
+
+198.22.45.173/26
+/26 is 255.255.255.192 (128 + 64) in dotted decimal
+2^2 = 4 subnets, 2^6 = 64 - 2 = 62 hosts per subnet
+   Network		Hosts			         Broadcast
+198.22.45.0	198.22.45.1-62		198.22.45.63
+198.22.45.64	198.22.45.65-126		198.22.45.127		
+198.22.45.128	198.22.45.129-190		198.22.45.191
+198.22.45.192	198.22.45.193-254		198.22.45.255
+
+VLSM (Variable Length Subnet Masks): Early routing protocols only supported FLSM (Fixed Length Subnet Masking) where all subnets had to be the same size, could not have a subnet with 14 hosts and another with 64 hosts in the same network. All modern routing protocols support VLSM, allowing different sized subnets according to how many hosts are needed. 
+Subnetting considerations: How many locations? How many hosts in each location? What are the IP addressing requirements for each location (different departments in different subnets)? What size is appropriate for each subnet (don't waste addresses but leave room for growth)? 
+Subnetting design steps: Find the largest segment and allocate a suitable subnet side for it. Allocate the subnet at the start of the address space. Start with the largest subnet down to the smallest.
+SUBNETTING CLASS C NETWORKS
+Engineering departments in both sites have 28 hosts. Sites will not grow and need to use the smallest subnets possible. You are assigned 200.15.10.0/24. Determine subnets, network, and broadcast addresses.
+2^3 = 8 subnets, 2^5 = 32 hosts - 2 = 30 		 /27 255.255.255.224 
+200.15.10.0		.1-.30		200.15.10.31
+200.15.10.32		.33-.62	200.15.10.63
+
+New York Sales requires 14 hosts. You are assigned 200.15.10.0/24. Determine subnets, network, and broadcast addresses.
+2^4 = 16 subnets, 2^ 4 = 16 hosts - 2 = 14	/28 255.255.255.240
+200.15.10.64		.65-.78	200.15.10.79
+
+Boston Sales requires 7 hosts. You are assigned 200.15.10.0/24. Determine subnets, network, and broadcast addresses.
+2^4 = 32 subnets, 2^4 = 16 hosts - 2 = 14		/28 255.255.255.240
+200.15.10.80		.81-.94	200.15.10.95
+
+The last subnet is the link between the New York and Boston routers. Determine subnets, network, and broadcast addresses.
+2^6 = 64 subnets, 2^2 = 4 hosts - 2 = 2		/30 255.255.255.252
+200.15.10.96		.97-.98	200.15.10.99
+
+SUBNETTING CLASS B NETWORKS
+Since class B is /16 default, networks are significantly larger for class B subnetting in comparison to class C.
+135.15.10.138/29, find the network address, broadcast address, and range of valid IP addresses.
+2^13 = 8,192 subnets, 2^3 = 8 hosts - 2 = 6	/29 255.255.255.248
+135.15.10.136		.137-.42	135.15.10.143
+
+
+Given the network of 172.16.85.0/21 how does one find that the usable range of IP addresses is 172.16.80.1-172.16.87.254? 
+For CIDR subnetting, you need to convert the IP into binary. The number after the / is the number of bits reserved for the network.
+172.16.85.0 in binary is 10101100.0010000.01010101.00000000. To find the network address, we keep the first 21 bits and set all bits from the 22nd on to 0, giving us 10101100.00010000.01010000.00000000, or 172.16.80.0, which is our network address.
+To get the broadcast address, we flip the 22nd bit on to 1, giving us 10101100.00010000.01010111.11111111, or 172.16.87.255.
+To get the usable range, we add one to the network address and subtract one from the broadcast address, giving us 172.16.85.1 to 172.16.87.254.
+
+
+SUBNETTING CLASS A NETWORKS
+/8 default for class A, networks are very large. 
+60.0.0.0/8, if we apply the subnet mask of 255.255.255.240, how many subnets are there and how many hosts per subnet. 
+255.255.255.240 is /28
+2^20 = 1,048,576 subnets,  2^4 = 16 hosts - 2 = 14
