@@ -1,0 +1,13 @@
+Syslog messages are generated when something happens on the device (OSPF adjacency goes up/down, interface up/down, etc), industry standard. Message format: sequence number, time stamp, facility (thing that generated the event), severity level - 8 different levels from 0 to 7, Mnemonic (short description of what happened), description (detailed message of what happened). 
+
+Severity levels: 
+0 Emergency - system is unstable
+1 Alert - should be corrected immediately
+2 Critical - a critical condition such as HDD error
+3 Error - error conditions
+4 Warning warning conditions
+5 Notice - normal but significant conditions - not errors but may require attention
+6 Informational - informational messages
+7 Debugging
+
+Mnemonic: Every Awesome Cisco Engineer Will Need Icecream Daily
