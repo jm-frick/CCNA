@@ -1,0 +1,22 @@
+Recommended requirements to be acceptable quality calls and video: Latency (delay) - under 150ms, Jitter (variation in delay) - under 30ms, Loss - under 1%. These are one way requirements, HD voice and video have higher requirements. Congestion can be experienced when it is possible for packets to come in quicker than they can be sent out; when congestion is experienced on a router or switch, packets are sent in a FIFO (First In First Out) manner by default - this can happen if the link coming into the router (usually LAN) is faster than the outgoing link (usually WAN). Congestion causes delay to packets as they wait in the queue; as the size of the queue changes, it causes jitter. After the queue limit is reached, packets will be dropped, and voice and video will be unacceptable quality. To mitigate, add more bandwidth (costly), and use QoS to give priority to traffic that needs it. 
+
+If giving one traffic type better service on the same link, the other traffic must get worse service. The point is to give each traffic type the service it requires. QoS is designed to mitigate temporary periods of congestion, if a link is permanently congested, the bandwidth should be increased. 
+
+For a router or switch to give a particular level of service, it has to recognize the traffic first. Ways to recognize: COS (Cost of Service) marking, DSCP (Differentiated Service Code Point) marking, ACL, or NBAR (Network Based Application Recognition). 
+
+CoS QoS has a 3 bit field in the Layer 2 802.1q frame header marking with a value of 0-7 can be set. Default value is 0, best effort traffic. CoS 6 and 7 are reserved for network use. IP phones mark their call signaling traffic as CoS 3 and their voice payload as CoS 5. 
+
+DSCP Type of Service byte in the Layer 3 header is used to carry the QoS marking, using 6 bits giving 64 possible values. Default is 0, best effort traffic. IP phones mark their call signaling traffic as 24 (CS3) and their voice payload as 46 (EF). Other markings are 26 (AF31) for mission critical data, and 34 (AF41) for SD video. This is the preferred classification and marking method because the router can gather the information from a single byte in the IP header. If using another method (ACL or NBAR), should be done as close to the source as possible and a DSCP marking added. 
+
+The switch should be configured to trust markings from IP phone and pass them on unchanged, but mark traffic from PC down to CoS 0 and DSCP 0. Voice and video endpoints mark their own traffic with a DSCP value. Other endpoints will typically not be able to mark their own traffic if QoS is needed, an ACL can be used to do this based on Layer 3 and 4 information. Can also be done with NBAR based on Layer 3 to 7 traffic information - signatures can be downloaded from Cisco for well known applications. 
+
+Queuing can be used to manage congestion on routers and switches. CBWFQ (Class Based Weighted Fair Queuing) gives bandwidth guarantees to specified traffic types. LLQ (Low Latency Queuing) is CBWFQ with a priority queue where traffic is sent before other traffic. 
+
+Cisco QoS configuration uses the MQC (Modular QoS CLI), has 3 main sections: Class Maps define the traffic to take an action on, Policy Maps take the action, Service Policies apply the policy to an interface.
+
+Traffic Shaping and Policing can be used to control traffic rate. They both measure the rate of traffic through an interface and take an action if the rate is above a configured limit. Classification can be used to allow different rates for different traffic types. 
+Traffic Shaping buffers any excess traffic so the overall traffic stays within the rate limit. Typically used on the customer side of a link.
+
+Traffic Policing drops or re-marks excess traffic to encore the specified rate limit. Typically used on the service provider side of a link.
+
+An enterprise can configure classification and marking to recognize worms and junk traffic like P2P file sharing. Know as scavenger traffic, recommended DSCP value is DSCP 8 (CS1).
