@@ -1,0 +1,59 @@
+Threat: Has the potential to cause harm to an IT asset
+Vulnerability: A weakness that compromises the security or functionality of a system. 
+Exploit: Uses a weakness to compromise the security or functionality of a system.
+Risk: The likelihood of a successful attack.
+Mitigation: Techniques to eliminate or reduce the potential of and seriousness of an attack.
+
+Malware is all malicious software, including: virus - software that inserts itself into software and can spread from computer to computer, requires human interaction to spread. Worm - self-propagating virus that replicates itself. Trojan Horse - malicious software which looks legitimate to trick humans into triggering it, often installs backdoors. Ransomware - encrypts data with the attacker's key and asks the victim to pay a ransom to obtain the key. 
+
+Evolution of a targeted attack: External reconnaissance: Obtain information about the intended victim. Unobtrusive, whois information, phone directories, job listings, etc. Eventually, ping sweeps, port and vulnerability scans. Initial compromise, Escalation of privileges, Internal reconnaissance, Further compromise, Further escalation of privileges, End goal.
+Reflection is a DoS attack where the attacker spoofs the victim's source address. The attacker sends traffic supposedly from the victim, which elicits a response from reflectors. Amplification causes a large amount of response traffic to the victim. 
+Buffer overflow attacks send malformed and/or too much data to the target system.
+
+uRPF (Unicast Reverse Path Forwarding) verifies a source IP address is reachable though the same interface it was received on. 
+IDS (Intrusion Detection System) and IPS (Intrusion Prevention System) use signatures to inspect packets up to layer 7, looking for traffic patterns which match known attacks. They can also use anomaly-based inspection to look for unusual behavior, such as a host sending more traffic than usual. Required skilled staff to tune the IPS to their own particular environment and minimize false positives and negatives. IDS sits alongside the traffic flow and informs security admins of potential concerns but does not block on its own. IPS sits inline with the traffic flow and can also block attacks. Organizations always deploy firewalls on the internet edge, IPSs are seen as optional but may be used in conjunction with a firewall. Modern firewalls often have IPS capabilities but may not have as many features as dedicated devices. 
+Firewalls secure traffic passing through them by permitting or denying. Stateful firewalls maintain a connection table which tracks the two way state of traffic passing through, return traffic is permitted by default. Next Generation Firewalls move beyond port/protocol inspection and blocking to add application level inspection, intrusion prevention, and user based security. Deep packet inspection up to layer 7, different permissions can be applied to different users. 
+Packet Filters - an ACL is a packet filter, do not maintain a connection table. Affect traffic in one direction only and do not track the state of two-way connections going through the router. Established keyword added to an ACL only checks for the ACK flag in return traffic, does not make the router a stateful firewall and does not keep a connection table. 
+Standard practice is to use firewalls on major security boundaries and augment this with internal ACLs. Purely external threats are covered by firewalls, internal covered by ACLs. 
+
+Cryptography provides services to data: Authenticity (proof of source), Confidentiality (privacy and secrecy), Integrity (has not changed during transit), Non-Repudiation (non-deniability). 
+Symmetric encryption uses the same shared key to both encrypt and decrypt, is fast, used for large transmissions, algorithms DES, 3DES, AES, SEAL. 
+Asymmetric encryption uses private and public keys; only the private key must be kept secret. Slow, used for smaller transmissions, algorithms RSA, ECDSA. 
+
+HMAC (Hash-Based Message Authentication Codes) provide data integrity. Sender creates a hash value from the data to be sent using a symmetric key and is appended to the data. Receiver hashes the data with the same shared key. If the has values are the same, the data has not been altered in transit. Used for large transmissions (email, secure web traffic, IPSec), algorithms MD5 SHA. 
+Key Distribution - symmetric key encryption is used for bulk data transmissions. Each side needs to know the shared key. PKI solves this dilemma, uses a trusted introducer (the Certificate Authority) for the two parties who need secure communication. Both parties must trust the CA. 
+SSL is replaced with TLS (Transport Layer Security), is sued to provide secure browsing with HTTPS and applications like email. Uses symmetric cryptography; keys are generated uniquely for each connection. Authentication is provided by public key cryptography; Message Authentication Code provides integrity. 
+
+Site-to-Site VPNs use symmetric encryption algorithms to send encrypted traffic over the internet. Typically terminate on a firewall or router on both sides. Pre shared key can be configured, but certificates offer a more scalable solution. 
+IPSec is a framework of open standards that provide secure encrypted communication over an IP network. IKE (Internet Key Exchange) handles negotiations of protocols and algorithms and generates the encryption and authentication keys. ISAKMP (Internet Security Association and Key Management Protocol) defines the procedures for authentication and communicating peer creation and management of Security Associations - typically uses IKE. AH (Authentication Header) provides integrity, authentication, and protections from replay attacks; ESP (Encapsulating Security Payload) adds confidentiality to what AH provides - ESP is more common. 
+ESP Tunnel Mode protects the internal routing information by encrypting the IP header of the original packet - widely implemented in site-to-site VPNs. ESP Transport Mode encrypts only the payload and ESP trailer - implemented for client-to-site VPN scenarios - usually used when another tunneling method (GRE, L2TP) is used to first encapsulate the IP packet, then IPSec is used to protect the GRE/L2TP tunnel packets. 
+
+Configure encrypted VPN tunnel
+Phase 1
+
+  R1(config)# crypto isakmp policy 1
+  R1(config-isakmp)# encrypt aes
+  R1(config-isakmp)# hash sha
+  R1(config-isakmp)# authentication pre-share
+  R1(config-isakmp)# group 2
+  R1(config-isakmp)# lifetime 86400
+  R1(config-isakmp)# crypto isakmp key NAME address 203.0.113.5
+
+ACL to Define Interesting Traffic
+
+  R1(config)# ip access-list extended NAMEVPN-ACL
+  R1(config-ext-nacl)# permit ip 10.10.10.0 0.0.0.255 10.10.20.0 0.0.0.255
+
+  R1(config-ext-nacl)# crypto ipsec transform-set NAMETS esp-aes esp-sha-hmac
+
+  R1(config)#crypto map NAMECM 10 ipsec-isakmp
+  R1(config-crypto-map)# set peer 203.0.113.5
+  R1(config-crypto-map)#set transform-set NAMETS
+  R1(config-crypto-map)# match address NAMEVPN-ACL
+
+  R1(config-crypto-map)# interface Serial0/1/0 
+  R1(config-if)# crypto map NAMECM
+
+  R1(config)# ip access-list extended NAMENAT-ACL
+  R1(config-ext-nacl)# deny ip 10.10.10.0 0.0.0.255 10.10.20.0 0.0.0.255 - stops traffic coming from the VPN tunnel from being NAT'd
+  R1(config-ext-nacl)# permit ip 10.10.10.0 0.0.0.255 any - traffic going out to public internet servers will be NAT'd
