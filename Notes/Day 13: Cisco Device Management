@@ -1,0 +1,20 @@
+Cisco devices have 4 built in memory locations: ROM, Flash, NVRAM (Non-Volitile RAM), RAM - an external USB drive can also be used. 
+When powered on, it first loads ROM: POST (Power On Self Test), then bootstrap. Bootstrap looks in Flash for an IOS software image to load. If an IOS image cannot be found, it will show the ROMMON (ROM Monitor) prompt at the command line. ROMMON can be used to recover a missing or corrupt image. Can boot from USB or TFTP server.
+The system loads the first image in Flash by default. Can override with the boot system command. Can copy additional images to Flash via TFP or USB. Can also boot from a TFTP server, but it is not recommended because if the TFTP server is inaccessible, the device will not boot. 
+Then, startup-config is loaded from NVRAM. The saved startup-config becomes the current running-config in RAM. If no startup-config is found, Setup Wizard will load. 
+The IOS system image and startup-config are loaded from flash and NVRAM into RAM during boot up. RAM is the normal, volatile, working memory. ROM, Flash, and NVRAM are permanent memory, not lost on reboot.
+On a switch, the VLAN Database (vlan.dat) is saved in either Flash or NVRAM, depending on model. 
+write erase will factory reset the device. 
+
+To change how router boots, config-register in global configuration or confreg at rommon. 0x2102 to boot normally, 0x2120 to boot into rommon, 0x2142 to ignore NVRAM (startup-config).
+
+Password recovery: Use the break sequence (usually CTRL+Break), confreg 0x2142 to ignore startup-config (while in rammon), reset to reboot, enable while password is not active, copy startup-config to running-config, enter a new enable secret in global config to overwrite the old one, config-register 0x2102 so the router will boot normally on next restart, copy run start to save config. Always search online for these steps; may be slightly different from device to device. 
+
+If you copy a config file into the running-config, it will be merged with the current configuration. To replace a configuration, factory reset and copy the new configuration into startup-config. 
+copy X tftp to transfer TO a TFTP server, where X is the source of the file (startup-config, flash, NVRAM, etc).
+copy tftp X to transfer FROM a TFTP server to the router or switch.
+delete flash:FILENAME to delete a file from Flash.
+
+R1(config)# boot system FILENAME to boot from an image. 
+
+ALWAYS copy run start (priv exec) OR do wr (global conf) AFTER CHANGES.
