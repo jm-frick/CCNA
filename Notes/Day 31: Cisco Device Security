@@ -1,0 +1,111 @@
+exec-timeout is 10 minutes by default, logs out of Exec mode after a duration of time. 
+
+hostname> User Exec mode
+hostname# Privileged Exec mode
+hostname(config)# Global Configuration mode
+hostname(config-if)# Interface Configuration mode
+
+There are separate passwords for console line (console cable), Virtual Terminal line (VTY) (SSH or Telnet), and Privileged Exec mode (enable command), can use the same or different passwords for all. 
+
+Configure password for console connection
+  R1(config)# line console 0 - only 1 console line on a router or switch, so 0 is the only one available
+  R1(config-line)# password PASSWORD
+  R1(config-line)# login
+Configure password for Telnet  - must have a management IP address assigned to the switch first
+  R1(config)# line vty 0 15  - configure Virtual Terminal line for all 15 connections
+  R1(config-line)# password PASSWORD
+  R1(config-line)# login
+Configure password for SSH
+  R1(config)# username USERNAME secret PASSWORD
+  R1(config)# line vty 0 15  - configure Virtual Terminal line for all 15 connections
+  R1(config-line)# transport input ssh
+  R1(config-line)# login local
+  R1(config-line)# exit
+  R1(config)# ip ssh version 2 - limits SSH to version 2 
+
+  ssh -l USERNAME 10.0.0.1 - how to SSH into a router from Windows
+
+Access Lists can be used to control access to the VTY lines. 
+  R1(config)# access-list 1 permit host 10.0.0.10
+  R1(config)# line vty 0 15
+  R1(config-line)# login
+  R1(config-line)# password PASSWORD
+  R1(config-line)# access-class 1 in - applies the ACL on inbound traffic
+
+Basic Privileged Exec Security
+  R1(config)# enable secret PASSWORD
+
+Line level (console and VTY) are shown in plain text on show run, to fix this:
+  R1(config)# service password-encryption
+
+Configure individual usernames for admins
+  R1(config)# username USERNAME secret PASSWORD
+  R1(config)# line console 0
+  R1(config-line)#login local - uses local username and password from previous command
+  R1(config)# line vty 0 15
+  R1(config-line)# login local
+
+There are 16 privilege levels of admin access (0-15), usernames can be assigned a privilege level; the default is 1. Different passwords for direct access can be configured for different privilege levels. Each available command in IOS can be assigned a privilege level. By default, only three are used - zero, user, and privileged. Zero only allows five commands: logout, enable, disable, help, and exit. User level (level 1) provides read-only access. Privileged level (level 15) allows complete control. 
+  R1(config)# username USERNAME privilege 12 secret PASSWORD - sets user to privilege level 12
+
+  R1(config)# privilege exec level 5 show running-config - sets the show run command to level 5
+
+  R1(config)# enable secret level 12 PASSWORD - sets a different password for level 12 access
+  R1# enable 12 - to log in to level 12 permissions account
+
+To enable SSH, a digital certificate with a key length of at least 768 bits must be generated to enable SSH encryption. 
+  R1(config)# ip domain-name DOMAINNAME
+  R1(config)# crypto key generate rsa  - generates SSH key
+
+Configuring line level security or local usernames on each device has serious scalability limitations; passwords and usernames would need to be changed on every device every time an employee leaves or a password is changed. AAA (Authentication, Authorization, and Accounting) servers are used to centralize this. Multiple AAA servers can be used for redundancy. 
+
+Authentication verifies someone is who they say they are - most commonly used is username and password.
+Authorization specifies what a particular user is allowed to do, such as running a command.
+Accounting keeps track of the actions a user has carried out. 
+Authorization and accounting are optional; authentication is mandatory if authorization and accounting are used. 
+
+Protocols for AAA are RADIUS and TACACS+. Both are open standards; some vendors may add proprietary extensions. RADIUS is most used for end user level services such as VPN access, TACACS+ is used for administrator access on Cisco devices as it has more granular authorization capabilities. Cisco's AAA server is called ISE (Identity Services Engine).
+
+Configure RADIUS
+  R1(config)# username LocalBackup secret PASSWORD - create backup local account
+  R1(config)# aaa new-model
+  R1(config)# radius server SERVERNAME1
+  R1(config-radius-server)# address ipv4 10.10.10.10
+  R1(config-radius-server)# key KEYNAME1 - configured on the AAA server to authenticate this particular device
+  -- second server added for redundancy --
+  R1(config)# radius server SERVERNAME2
+  R1(config-radius-server)# address ipv4 10.10.10.11
+  R1(config-radius-server)# key KEYNAME2
+
+  R1(config-radius-server)# aaa group server radius GROUPNAME
+  R1(config-sg-server)# server name SERVERNAME1
+  R1(config-sg-server)# server name SERVERNAME2
+  R1(config-sg-server)# aaa authentication login default group GROUPNAME local - sets default as AAA server but will failover to local if they cannot be reached
+
+Configure TACACS+
+  R1(config)# username LocalBackup secret PASSWORD - create backup local account
+  R1(config)# aaa new-model
+  R1(config)# tacacs server SERVERNAME1
+  R1(config-server-tacacs)# address ipv4 10.10.10.10
+  R1(config-server-tacacs)# key KEYNAME1 - configured on the AAA server to authenticate this particular device
+  -- second server added for redundancy --
+  R1(config)# tacacs server SERVERNAME2
+  R1(config-server-tacacs)# address ipv4 10.10.10.11
+  R1(config-server-tacacs)# key KEYNAME2
+
+  R1(config-radius-server)# aaa group server tacacs+ GROUPNAME
+  R1(config-sg-server)# server name SERVERNAME1
+  R1(config-sg-server)# server name SERVERNAME2
+  R1(config-sg-server)# aaa authentication login default group GROUPNAME local - sets default as AAA server but will failover to local if they cannot be reached
+
+Login and Exec Bannerscan be displayed in the CLI before and/or after an administrator logs in, commonly used to display security warnings. 
+  R1(config)# banner login " (hit enter here to start the command) - to display a banner on login
+  R1(config)# banner exec " (hit enter here to start the command) - to display a banner after entering Exec mode
+
+Disable unused services as a best practice; it lessens the attack surface and the load on the devices. All servers and infrastructure should be synchronized to the same time. This aids in troubleshooting as logs will report the correct time events occurred. 
+
+Configure NTP
+  (R1config)# clock timezone TIMEZONE
+  R1(config)# ntp server 10.0.1.100 - whatever the IP is for the NTP server, for NTP clients
+  R1(config)# ntp master - makes the router the NTP server
+  R1# show clock - to view NTP status and time
