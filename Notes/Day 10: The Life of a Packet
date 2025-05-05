@@ -1,0 +1,19 @@
+DNS (Domain Name System) resolves a FQDN such as cisco.com to an IP address. Enterprises will have an internal DNS server to resolve internal IP host addresses.  If the internal DNS server cannot resolve a query, it will forward the request to public DNS servers on the Internet.
+DNS requests are sent using UDP Port 53 and can fail over to TCP.
+
+DNS client commands
+ip domain-lookup - TO RESOLVE HOSTNAMES
+ip name-server DNSIPADDRESS - SETS DNS SERVER ADDRESS ON A CLIENT
+ip domain-name DOMAINNAME - SPECIFIES THE DNS SERVERS USED FOR RESOLVING DNS NAMES TO IP ADDRESSES	
+
+DNS host commands
+ip dns server - TO MAKE A ROUTER A DNS SERVER
+ip host NAME IPADDRESS - TO SET A HOST SERVER
+
+show arp to show the ARP table.
+
+IP to MAC address resolution: the sender needs to know the receiver's IP address and MAC address to form the packet it is going to send. Can point the sender to the destination IP or to a FQDN. DNS maintains a mapping of FQDNs to IP addresses. ARP (Address Resolution Protocol) is used to map IP to MAC. The source and destination IP address never changes, but the source and destination MAC address changes from hop to hop.
+ARP messages (replies and requests from neighboring hosts) are saved in a host's ARP cache, so it doesn’t need to send an ARPrequest every time it wants to communicate.
+ARP uses two message types, ARP Request and ARP Reply. When sending a packet to another subnet, the end host will send an ARP request to its own default gateway first.
+
+Unknown destination/broadcast MAC addresses are FFFF.FFFF.FFFF (Broadcast) until destination is known. 
