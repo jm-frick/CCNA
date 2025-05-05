@@ -1,0 +1,17 @@
+A router has two main functions: determining the best path to available networks and forwarding traffic to those networks. The best available path or paths to a destination are listed in a routing table. A routing table consists of directly connected networks and routes configured statically by the administrator or dynamically learned through a routing protocol. 
+
+Local Routes show in the routing table since IOS 15 and always have a /32 subnet mask. 
+Connected Routes: If a router receives traffic for a network which it is not directly attached to, it needs to know how to get there to forward traffic. An administrator can manually add a static route to the destination, or the router can learn it via a routing protocol. 
+
+ip route IPADDR SUBNETMASK NEXTHOPIPADDR - next hop address is the next router in the chain - must be a directly connected interface, IP address is the IP needing to be accessed. IP addresses must be accessible in both directions for everything to work.
+  ip route ip address you want to reach     subnet mask     directly connected router that is connected to the ip you want to reach
+
+Summary Routes lessen administrative overhead and memory usage on routers for static routing. The command is the same, but instead of the IP address you want to reach, use the base address - usually something like 10.1.0.0 - to cover all IP addresses in that range. Because summarization does not have to be on classful boundaries, use the subnet mask to lessen the address range, example: ip route 10.1.0.0 255.255.252.0 10.0.0.2 to allow the IP address range of 10.1.0.0 to 10.1.3.0.
+
+Longest Prefix: When there are overlapping routes, the longest prefix - whichever is the most specific/closest match - will be selected. 
+
+When multiple equal length routes are added for the same destination, the router will add them all to the routing table and load balance between them. The destination and subnet mask must be exactly equal to do load balancing. 
+Gateway of Last Resort/Default Route is a catchall for any traffic that does not match a specific route, usually used to add the final route from an internal network to an outside network (the Internet). 
+	ip route 0.0.0.0 0.0.0.0 IPADDROFEXTERNALNETWORK
+
+Use ping with no other commands to get an extended ping command, allows specifying which interface you want to use to ping.
