@@ -11,3 +11,47 @@ Severity levels:
 7 Debugging
 
 Mnemonic: Every Awesome Cisco Engineer Will Need Icecream Daily
+
+Syslog messages can be logged to various locations: Console line - events will be down in the CLI over a console connection enabled by default, VTY lines - shown in CLI when logged in over Telnet or SSH not enabled by default, Logging buffer - saved in RAM can be viewed with show logging command with all events logged as default, External Syslog servers. Can set different severity levels to be logged to different locations. 
+  R1(config)# no logging console - disabled logging to console line
+  R1(config)# logging monitor 6 - events with severity level 6 or higher will be logged to VTY lines
+  R1(config)# logging buffered debugging - events with severity level 7 and higher will be logged to the buffer
+
+Configuring an external Syslog server - to centralize reporting
+  R1(config)# logging 10.0.0.100 - IP of the Syslog server
+  R1(config)# logging trap debugging - logs everything for verbose logging
+
+Other configurations for log viewing
+  R1(config)# logging synchronous - turns off line level events that interrupt typing commands
+  R1# terminal monitor - enable debug output to VTY lines
+
+A SIEM (Security Information and Event Management) system provides a centralized location for all logging messages and will typically provide advanced analysis and correlation of events.  
+
+SNMP (Simple Network Management Protocol) is an open standard for network monitoring. An SNMP Manager (the SNMP server, commonly called SNMP server or NMS - Network Management System) can collect and organize information from an SNMP Agent, which is SNMP software running on managed devices such as routers and switches. SNMP Manager can pull information from the device (Get), or the device can push it to the server (Trap). MIB (Management Information Base) organizes data variables on SNMP managed systems. The SNMP Manager and Agent need to share the MIB so they know which variables can be reported on. 
+SNMPv1 uses plain text authentication between Manager and Agent using matching community strings
+SNMPv2c also uses plain text and supports bulk retrieval, uses Community Strings rather than username/password to authenticate the Agent and Manager to each other. Matching Community Strings need to be set on both sides for communication. Read Only is used by the Manager to read information; Read Write is used by the Manager to set information. 
+SNMPv3 supports strong authentication and encryption, the preferred version, but not supported on all devices
+
+SNMPv2c Configuration
+  R1(config)# snmp-server contact EMAIL@ADDRESS.COM
+  R1(config)# snmp-server location NAME - optional, identifies the agent to the manager
+  R1(config)# snmp-server community COMMUNITYNAME1 ro
+  R1(config)# snmp-server community COMMUNITYNAME2 rw
+  R1(config)# snmp-server host 10.0.0.100 COMMUNITYNAME1
+  R1(config)# snmp-server enable traps config - when a configuration change is made, a trap will be sent to the NMS system at 10.0.0.100 using the ro Community string
+
+Most devices will use a default ro Community strong of "public", and a default rw Community string of "private" - attackers can use this to read or set information on devices. Best practice is to disable SNMP on devices where not used. Use SNMPv3 with secure passwords on devices where it is used. If SNMPv3 is not supported, use non-efault Community strings. 
+
+SNMPv3 uses users and groups instead of Community Strings. There are 3 security levels available, configured at the group level: noAuthnoPriv (No authentication no privacy) - no authentication password is exchanged and the communication between agent and server are not encrypted, username is used without password. AuthNoPriv - password authentication (encrypted) is used, no encryption while sharing information between devices. AuthPriv - password authentication, encrypted communication. 
+
+Configuration for SNMPv3
+  R1(config)# snmp-server group GROUPNAME v3 priv
+  R1(config)# snmp-server user USERNAME GROUPNAME v3 auth (md5 or sha, sha is slower but more secure) AUTHPASSWORD priv (des, 3des, aes - aes is slower but more secure) (128, 192, 256 bit) PRIVPASSWORD (this is the encryption password)
+  R1(config)# snmp-server 
+  R1(config)# snmp-server 
+  R1(config)# snmp-server 
+
+Access can be used to reference an acess-list which limits the device to communication with the IP address of the NMS server only. Contexts are used on switches to specify which VLANs are accessible via SNMP. Views can be used to limit what information is accessible to the NMS server - all MIB read objects are accessible by default, no MIB write object are accessible by default - can read anything but write nothing. Notify is used to send notification (Trap) to members of the group, disabled by default. 
+Both Syslog and SNMP provide logging, Syslog can often provide more granular detail but only supports a device pushing information (not pulling or setting from server). NMS servers will typically support both Syslog and SNMP. 
+
+There is overlap between NMS and SIEM products. Both can gather logging information from network infrastructure devices using protocols such as Syslog, SNMP, and NetFlow. A product marketed as an NMS will have a focus on collecting network information and provide reports, early warning of and easier troubleshooting of network events. A product which is marketed as a SIEM will have a focus on collating security information and providing reports, early warning of and easier troubleshooting of security events. 
