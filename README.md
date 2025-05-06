@@ -54,4 +54,6 @@ Chapter Notes:\
 [Day 34: Cloud Computing](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2034%3A%20Cloud%20Computing)\
 [Day 35: Wireless Networking Fundamentals](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2035%3A%20Wireless%20Networking%20Fundamentals)\
 [Day 36: Network Automation and Programmability](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2036%3A%20Network%20Automation%20and%20Programmability)\
-[Day 37: CCNA v1.1 - AI and Machine Learning](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2037%3A%20CCNA%20v1.1%20-%20AI%20and%20Machine%20Learning)\
+[Day 37: CCNA v1.1 - AI and Machine Learning](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2037%3A%20CCNA%20v1.1%20-%20AI%20and%20Machine%20Learning)
+
+
