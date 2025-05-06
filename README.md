@@ -14,7 +14,6 @@ IP Services: 90%\
 Security Fundamentals: 93%\
 Network Fundamentals: 90%\
 ***
-\
 Chapter Notes:\
 [Day 1: Host to Host Communications](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%201%3A%20Host%20to%20Host%20Communications)\
 [Day 2: Cisco IOS Operating System](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%202%3A%20Cisco%20IOS%20Operating%20System)\
@@ -53,4 +52,4 @@ Chapter Notes:\
 [Day 35: Wireless Networking Fundamentals](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2035%3A%20Wireless%20Networking%20Fundamentals)\
 [Day 36: Network Automation and Programmability](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2036%3A%20Network%20Automation%20and%20Programmability)\
 [Day 37: CCNA v1.1 - AI and Machine Learning](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2037%3A%20CCNA%20v1.1%20-%20AI%20and%20Machine%20Learning)
-
+***
