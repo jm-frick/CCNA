@@ -24,4 +24,41 @@ Network Fundamentals: 90%
 ______________________________________________________________________________________________________________
 Chapter Notes:
 
-[Day1: Host to Host Communications](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%201%3A%20Host%20to%20Host%20Communications)
+[Day 1: Host to Host Communications](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%201%3A%20Host%20to%20Host%20Communications)
+[Day 2: Cisco IOS Operating System](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%202%3A%20Cisco%20IOS%20Operating%20System)
+[Day 3: OSI Layer 4 - The Transport Layer](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%203%3A%20OSI%20Layer%204%20-%20The%20Transport%20Layer)
+[Day 4: OSI Layer 3 - The Network Layer](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%204%3A%20OSI%20Layer%203%20-%20The%20Network%20Layer)
+[Day 5: IP Address Classes](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%205%3A%20IP%20Address%20Classes)
+[Day 6: Subnetting](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%206%3A%20Subnetting)
+[Day 7: OSI Layer 2 - The Data Link Layer](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%207%3A%20OSI%20Layer%202%20-%20The%20Data%20Link%20Layer)
+[Day 8: OSI Layer 1 - The Physical Layer](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%208%3A%20OSI%20Layer%201%20-%20The%20Physical%20Layer)
+[Day 9: Cisco Device Functions](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%209%3A%20Cisco%20Device%20Functions)
+[Day 10: The Life of a Packet](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2010%3A%20The%20Life%20of%20a%20Packet)
+[Day 11: The Cisco Troubleshooting Methodology](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2011%3A%20%20The%20Cisco%20Troubleshooting%20Methodology%20Define%20Problem%3A%20Clearly%20specify%20what%20the%20problem%20is)
+[Day 12: Cisco Router and Switch Basics](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2012%3A%20Cisco%20Router%20and%20Switch%20Basics)
+[Day 13: Cisco Device Management](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2013%3A%20Cisco%20Device%20Management)
+[Day 14: Routing Fundamentals](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2014%3A%20Routing%20Fundamentals)
+[Day 15: Dynamic Routing Protocols](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2015%3A%20Dynamic%20Routing%20Protocols)
+[Day 16: Connectivity Troubleshooting](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2015%3A%20Dynamic%20Routing%20Protocols)
+[Day 17: IGP - Interior Gateway Protocol Fundamentals](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2017%3A%20IGP%20-%20Interior%20Gateway%20Protocol%20Fundamentals)
+[Day 18: OSPF - Open Shortest Path First](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2018%3A%20OSPF%20-%20Open%20Shortest%20Path%20First)
+[Day 19: VLANs - Virtual Local Area Networks](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2019%20-%20VLANs%3A%20Virtual%20Local%20Area%20Networks)
+[Day 20: Inter-VLAN Routing](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2020%3A%20Inter-VLAN%20Routing)
+[Day 21: DHCP - Dynamic Host Configuration Protocol](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2021%3A%20DHCP%20-%20Dynamic%20Host%20Configuration%20Protocol)
+[Day 22: HSRP - Hot Standby Router Protocol](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2022%3A%20HSRP%20-%20Hot%20Standby%20Router%20Protocol)
+[Day 23: STP - Spanning Tree Protocol](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2023%3A%20STP%20-%20Spanning%20Tree%20Protocol)
+[Day 24: EtherChannel](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2024%3A%20EtherChannel)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
