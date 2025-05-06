@@ -6,10 +6,8 @@ A combination of Neil Anderson's [Udemy Course](https://www.udemy.com/course/ccn
 I highly recommend all of the sources I used to study, each one helped in understanding the material needed to pass the exam.\
 _____________________________________________________________________________________________________________________\
 \
----
-\
 I passed the exam with the following scores: 
-
+***
 Automation and Programmability: 90%\
 Network Access: 95%\
 IP Connectivity: 88%\
