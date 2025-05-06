@@ -4,7 +4,7 @@ This is a repository of all the resources I used to study for the CCNA exam.\
 A combination of Neil Anderson's [Udemy Course](https://www.udemy.com/course/ccna-complete), Jeremy's IT Lab [YouTube Course + Practice Exams](https://www.youtube.com/watch?v=H8W9oMNSuwo&list=PLxbwE86jKRgMpuZuLBivzlM8s2Dk5lXBQ), Wendell Odom's [OCG](https://www.ciscopress.com/store/ccna-200-301-official-cert-guide-library-9781587147142), and [Boson ExSim](https://www.boson.com/practice-exam/200-301-cisco-ccna-practice-exam) were used to study and compile the notes here. I completed all labs in Neil Anderson and Jeremy's courses, in addition to Jeremy's [mega lab](https://www.youtube.com/watch?v=2p7-MluKAgE&t). \
 \
 I highly recommend all of the sources I used to study, each one helped in understanding the material needed to pass the exam.\
-___________________________________________________________________________________________________________________\
+_____________________________________________________________________________________________________________________\
 \
 I passed the exam with the following scores: 
 
