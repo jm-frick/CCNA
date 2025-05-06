@@ -32,10 +32,10 @@ Chapter Notes:
 
 [Day 4: OSI Layer 3 - The Network Layer](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%204%3A%20OSI%20Layer%203%20-%20The%20Network%20Layer)
 
-[Day 5: IP Address Classes](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%205%3A%20IP%20Address%20Classes)
-[Day 6: Subnetting](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%206%3A%20Subnetting)
-[Day 7: OSI Layer 2 - The Data Link Layer](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%207%3A%20OSI%20Layer%202%20-%20The%20Data%20Link%20Layer)
-[Day 8: OSI Layer 1 - The Physical Layer](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%208%3A%20OSI%20Layer%201%20-%20The%20Physical%20Layer)
+[Day 5: IP Address Classes](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%205%3A%20IP%20Address%20Classes)\
+[Day 6: Subnetting](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%206%3A%20Subnetting)\
+[Day 7: OSI Layer 2 - The Data Link Layer](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%207%3A%20OSI%20Layer%202%20-%20The%20Data%20Link%20Layer)\
+[Day 8: OSI Layer 1 - The Physical Layer](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%208%3A%20OSI%20Layer%201%20-%20The%20Physical%20Layer)\
 [Day 9: Cisco Device Functions](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%209%3A%20Cisco%20Device%20Functions)
 [Day 10: The Life of a Packet](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2010%3A%20The%20Life%20of%20a%20Packet)
 [Day 11: The Cisco Troubleshooting Methodology](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%2011%3A%20%20The%20Cisco%20Troubleshooting%20Methodology%20Define%20Problem%3A%20Clearly%20specify%20what%20the%20problem%20is)
