@@ -14,7 +14,7 @@ IP Services: 90%\
 Security Fundamentals: 93%\
 Network Fundamentals: 90%
 ***
-Chapter Notes:\
+# Chapter Notes:\
 [Day 1: Host to Host Communications](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%201%3A%20Host%20to%20Host%20Communications)\
 [Day 2: Cisco IOS Operating System](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%202%3A%20Cisco%20IOS%20Operating%20System)\
 [Day 3: OSI Layer 4 - The Transport Layer](https://github.com/jm-frick/CCNA/blob/main/Notes/Day%203%3A%20OSI%20Layer%204%20-%20The%20Transport%20Layer)\
