@@ -1,3 +1,4 @@
+Define Problem: Clearly specify what the problem is
 Gather Information: Find out information about the problem (ping host if the connection is down, ask if any changed recently, etc)
 Analyze Information: Ask relevant questions (show and debug commands, ask people) and analyze the output for clues on how to solve the problem
 Eliminate Potential Causes: Process of elimination to narrow down potential cause
